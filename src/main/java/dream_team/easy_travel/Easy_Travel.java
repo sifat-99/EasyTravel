@@ -141,7 +141,7 @@ public final class Easy_Travel {
     public JPanel createHomePanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(Color.GRAY);
-        panel.add(new JLabel("Welcome to the Home Page"));
+        panel.add(new JLabel("Welcome to the Home Page....!!"));
         return panel;
     }
 
