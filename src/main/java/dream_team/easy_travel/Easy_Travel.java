@@ -1,6 +1,7 @@
 package dream_team.easy_travel;
 
 import dream_team.easy_travel.mainApp.AboutUsPanel;
+import dream_team.easy_travel.mainApp.Blog;
 import dream_team.easy_travel.mainApp.HomePage;
 import dream_team.easy_travel.mainApp.LoginPanel;
 
@@ -14,9 +15,9 @@ public final class Easy_Travel {
     private final JFrame frame;
     private final JPanel contentPanel;
     private final JButton homeButton;
-    private final JButton aboutButton, contactButton;
+    private final JButton blogButton, postButton;
     private final JMenu hamburgerMenu;
-    private final JButton signIn;
+    private final JButton aboutButton;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Easy_Travel::new);
@@ -53,18 +54,18 @@ public final class Easy_Travel {
         // Create navigation buttons
         homeButton = new JButton("Home");
         homeButton.setPreferredSize(new Dimension(100, 100));
+        blogButton = new JButton("Blog");
+        blogButton.setPreferredSize(new Dimension(100, 80));
+        postButton = new JButton("Post");
+        postButton.setPreferredSize(new Dimension(100, 80));
         aboutButton = new JButton("About");
         aboutButton.setPreferredSize(new Dimension(100, 80));
-        contactButton = new JButton("Contact");
-        contactButton.setPreferredSize(new Dimension(100, 80));
-        signIn = new JButton("Login");
-        signIn.setPreferredSize(new Dimension(100, 80));
 
         // Add buttons to the menu bar
         menuBar.add(homeButton);
+        menuBar.add(blogButton);
+        menuBar.add(postButton);
         menuBar.add(aboutButton);
-        menuBar.add(contactButton);
-        menuBar.add(signIn);
 
         // Create the hamburger menu
         hamburgerMenu = new JMenu("\uD83D\uDCDC");
@@ -77,15 +78,15 @@ public final class Easy_Travel {
 
         // Add different views to the content panel
         contentPanel.add(new HomePage(this), "Home");
+        contentPanel.add(createContactPanel(), "Post");
         contentPanel.add(new AboutUsPanel(this), "About");
-        contentPanel.add(createContactPanel(), "Contact");
-        contentPanel.add(new LoginPanel(this), "Login");
+        contentPanel.add(new Blog(this), "Blog");
 
         // Add action listeners to buttons
         homeButton.addActionListener(e -> showPanel("Home"));
+        blogButton.addActionListener(e -> showPanel("Blog"));
+        postButton.addActionListener(e -> showPanel("Post"));
         aboutButton.addActionListener(e -> showPanel("About"));
-        contactButton.addActionListener(e -> showPanel("Contact"));
-        signIn.addActionListener(e -> showPanel("Login"));
 
         // Set up the frame layout
         frame.setLayout(new BorderLayout());
@@ -108,28 +109,28 @@ public final class Easy_Travel {
     private void adjustMenuItems() {
         int frameWidth = frame.getWidth();
 
-        int buttonsTotalWidth = homeButton.getPreferredSize().width + aboutButton.getPreferredSize().width
-                + contactButton.getPreferredSize().width + signIn.getPreferredSize().width;
+        int buttonsTotalWidth = homeButton.getPreferredSize().width + blogButton.getPreferredSize().width
+                + postButton.getPreferredSize().width + aboutButton.getPreferredSize().width;
 
         if (frameWidth < buttonsTotalWidth + 200) {
             homeButton.setVisible(false);
+            blogButton.setVisible(false);
+            postButton.setVisible(false);
             aboutButton.setVisible(false);
-            contactButton.setVisible(false);
-            signIn.setVisible(false);
 
             // Add buttons to the hamburger menu
             if (hamburgerMenu.getItemCount() == 0) {
                 hamburgerMenu.add(createMenuItemFromButton(homeButton));
+                hamburgerMenu.add(createMenuItemFromButton(blogButton));
+                hamburgerMenu.add(createMenuItemFromButton(postButton));
                 hamburgerMenu.add(createMenuItemFromButton(aboutButton));
-                hamburgerMenu.add(createMenuItemFromButton(contactButton));
-                hamburgerMenu.add(createMenuItemFromButton(signIn));
             }
         } else {
             // Show buttons and hide hamburger menu
             homeButton.setVisible(true);
+            blogButton.setVisible(true);
+            postButton.setVisible(true);
             aboutButton.setVisible(true);
-            contactButton.setVisible(true);
-            signIn.setVisible(true);
             hamburgerMenu.removeAll();
         }
     }

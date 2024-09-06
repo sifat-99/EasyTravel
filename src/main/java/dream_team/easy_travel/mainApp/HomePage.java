@@ -48,7 +48,7 @@ public class HomePage extends JPanel {
         }
 
         CustomButton exploreButton = new CustomButton("Get Started", 30);
-        exploreButton.setBounds(100, 400, 150, 50);
+        exploreButton.setBounds(120, 385, 150, 50);
         imageLabel.add(exploreButton);
 
         exploreButton.addActionListener(e -> {
@@ -60,16 +60,16 @@ public class HomePage extends JPanel {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         add(centerPanel, BorderLayout.CENTER);
 
-        JButton goToHomeButton = new JButton("Go to Login");
-        goToHomeButton.addActionListener(e -> app.showPanel("Login"));
-        goToHomeButton.setBounds(0, 700, 1200, 50);
-        imageLabel.add(goToHomeButton, BorderLayout.SOUTH);
+//        JButton goToHomeButton = new JButton("Go to Login");
+//        goToHomeButton.addActionListener(e -> app.showPanel("Login"));
+//        goToHomeButton.setBounds(0, 700, 1200, 50);
+//        imageLabel.add(goToHomeButton, BorderLayout.SOUTH);
     }
 
     private ImageIcon loadImageIcon() {
         try {
             ImageIcon icon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/HomeBG.png")));
-            Image image = icon.getImage().getScaledInstance(1200, 800, Image.SCALE_SMOOTH);
+            Image image = icon.getImage().getScaledInstance(1200, 750, Image.SCALE_SMOOTH);
             return new ImageIcon(image);
         } catch (NullPointerException e) {
             System.err.println("Resource not found: " + "/HomeBG.png");
