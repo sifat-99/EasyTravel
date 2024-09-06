@@ -11,18 +11,19 @@ package dream_team.easy_travel.mainApp;
 import dream_team.easy_travel.Easy_Travel;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class AboutUsPanel extends JPanel {
     public AboutUsPanel(Easy_Travel app) {
         setLayout(new BorderLayout());
-        setBackground(Color.LIGHT_GRAY);
-
-        JLabel label = new JLabel("About Us Page", SwingConstants.CENTER);
-        add(label, BorderLayout.CENTER);
+        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/HomeBG.png")));
+        JLabel imageLabel = new JLabel(imageIcon);
+        add(imageLabel, BorderLayout.NORTH);
 
         JButton goToHomeButton = new JButton("Go to Home");
         goToHomeButton.addActionListener(e -> app.showPanel("Home"));
+        goToHomeButton.setBounds(0, 700, 1200, 50);
 
-        add(goToHomeButton, BorderLayout.SOUTH);
+        imageLabel.add(goToHomeButton, BorderLayout.SOUTH);
     }
 }
