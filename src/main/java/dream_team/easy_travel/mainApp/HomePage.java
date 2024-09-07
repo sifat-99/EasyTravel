@@ -71,7 +71,7 @@ public class HomePage extends JPanel {
         }
     }
 
-    private Font loadFont() {
+    public Font loadFont() {
         try (InputStream is = getClass().getResourceAsStream("/Lobster-Regular.ttf")) {
             assert is != null;
             Font font = Font.createFont(Font.TRUETYPE_FONT, is);

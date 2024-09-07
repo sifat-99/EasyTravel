@@ -32,7 +32,7 @@ public class Blog extends JPanel {
         cardPanel.setOpaque(false); // Make sure the panel is transparent so the background image is visible
 
         // Add cards with titles and descriptions
-        for (int i = 1; i <= 20; i++) {  // Adding 6 cards for demonstration
+        for (int i = 1; i <= 8; i++) {
             String title = "Card Title " + i;
             String description = "This is a description for Card " + i + ". It contains some example text.";
             JPanel card = createCard(title, description);

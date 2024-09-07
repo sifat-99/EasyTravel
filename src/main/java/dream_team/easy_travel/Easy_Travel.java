@@ -6,17 +6,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Objects;
 
 public final class Easy_Travel {
     private final JFrame frame;
     private final JPanel contentPanel;
-    private final JButton homeButton;
-    private final JButton blogButton, postButton;
-    private final JMenu hamburgerMenu;
-    private final JButton aboutButton;
-    private final JButton loginButton;
-    private final JButton logoutButton;
+    private JButton homeButton;
+    private JButton blogButton, postButton;
+    private JButton aboutButton;
+    private JButton loginButton;
+    private JButton logoutButton;
     private User loggedInUser;
 
     public static void main(String[] args) {
@@ -32,50 +33,8 @@ public final class Easy_Travel {
         ImageIcon Logo = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
         frame.setIconImage(Logo.getImage());
 
-        // Create the menu bar
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.setPreferredSize(new Dimension(menuBar.getPreferredSize().width, 50));
-        menuBar.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
-        // Load and resize the logo image
-        ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
-        Image logoImage = logoIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-        logoIcon = new ImageIcon(logoImage);
-
-        // Create the logo label with the resized image
-        JLabel logoLabel = new JLabel(logoIcon);
-        logoLabel.setPreferredSize(new Dimension(50, 50));
-        logoLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        logoLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-        menuBar.add(logoLabel);
-        menuBar.add(Box.createHorizontalGlue());
-
-        // Create navigation buttons
-        homeButton = new JButton("Home");
-        homeButton.setPreferredSize(new Dimension(100, 100));
-        blogButton = new JButton("Blog");
-        blogButton.setPreferredSize(new Dimension(100, 80));
-        postButton = new JButton("Post");
-        postButton.setPreferredSize(new Dimension(100, 80));
-        aboutButton = new JButton("About");
-        aboutButton.setPreferredSize(new Dimension(100, 80));
-        loginButton = new JButton("Login");
-        loginButton.setPreferredSize(new Dimension(100, 80));
-        logoutButton = new JButton("Logout");
-        logoutButton.setPreferredSize(new Dimension(100, 80));
-
-        // Add buttons to the menu bar
-        menuBar.add(homeButton);
-        menuBar.add(blogButton);
-        menuBar.add(postButton);
-        menuBar.add(aboutButton);
-        menuBar.add(loginButton);
-        menuBar.add(logoutButton);
-        logoutButton.setVisible(loggedInUser != null);
-
-        // Create the hamburger menu
-        hamburgerMenu = new JMenu("\uD83D\uDCDC");
-        menuBar.add(hamburgerMenu);
+        // Create the custom menu bar with rounded style
+        JPanel menuBar = createMenuBar();
 
         // Create the content panel
         contentPanel = new JPanel();
@@ -90,7 +49,75 @@ public final class Easy_Travel {
         contentPanel.add(new LoginPanel(this), "Login");
         contentPanel.add(new SignUp(this), "SignUp");
 
-        // Add action listeners to buttons
+        // Create a layered pane to hold the logoPanel and contentPanel
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(1200, 800));
+
+        // Add the contentPanel to the default layer
+        contentPanel.setBounds(0, 0, 1200, 800);
+        layeredPane.add(contentPanel, JLayeredPane.DEFAULT_LAYER);
+
+        // Set up the frame layout
+        frame.setLayout(new BorderLayout());
+        frame.add(menuBar, BorderLayout.NORTH);
+        frame.add(layeredPane, BorderLayout.CENTER);
+
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                adjustMenuItems();
+            }
+        });
+
+        // Show the initial view
+        showPanel("Home");
+        updateButtonColors(homeButton);
+        updateFrameTitle("Home");
+        updateButtonVisibility();
+
+        frame.setVisible(true);
+    }
+
+    private JPanel createMenuBar() {
+        JPanel menuBar = new JPanel(new BorderLayout());
+        menuBar.setBackground(Color.WHITE);
+        menuBar.setPreferredSize(new Dimension(1200, 80));
+
+        ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
+        Image logoImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+        logoIcon = new ImageIcon(logoImage);
+
+        // Create the logo label with the resized image
+        JLabel logoLabel = new JLabel(logoIcon);
+        logoLabel.setPreferredSize(new Dimension(120, 120));
+        logoLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        logoLabel.setVerticalAlignment(SwingConstants.TOP);
+
+        JPanel navPanel = getNavPanel();
+
+        // Create and style navigation buttons
+        homeButton = createStyledButton("Home");
+
+        blogButton = createStyledButton("Blog");
+        postButton = createStyledButton("Post");
+        aboutButton = createStyledButton("About");
+        loginButton = createStyledButton("Login");
+        logoutButton = createStyledButton("Logout");
+
+
+        // Add buttons to nav panel
+        navPanel.add(homeButton);
+        navPanel.add(blogButton);
+        navPanel.add(postButton);
+        navPanel.add(aboutButton);
+        navPanel.add(loginButton);
+        navPanel.add(logoutButton);
+
+        // Add logo and navigation panels to the menu bar
+        menuBar.add(logoLabel, BorderLayout.WEST);
+        menuBar.add(navPanel, BorderLayout.EAST);
+
+        // Add action listeners to the buttons
         homeButton.addActionListener(e -> {
             showPanel("Home");
             updateButtonColors(homeButton);
@@ -118,78 +145,68 @@ public final class Easy_Travel {
         });
         logoutButton.addActionListener(e -> {
             setLoggedInUser(null);
-            updateButtonVisibility();
             showPanel("Home");
             updateButtonColors(homeButton);
             updateFrameTitle("Home");
         });
 
-        // Set up the frame layout
-        frame.setLayout(new BorderLayout());
-        frame.setJMenuBar(menuBar);
-        frame.add(contentPanel, BorderLayout.CENTER);
+        return menuBar;
+    }
 
-        frame.addComponentListener(new ComponentAdapter() {
+    private static JPanel getNavPanel() {
+    JPanel navPanel = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(Color.decode("#46BBF7"));
+            int width = getWidth();
+            int height = getHeight();
+            int arcSize = 40;
+            g2.fillRoundRect(0, 0, arcSize, height, arcSize, arcSize); // Left side with rounded corners
+            g2.fillRect(arcSize / 2, 0, width - arcSize / 2, height); // Right side without rounded corners
+        }
+    };
+    navPanel.setOpaque(false);
+    navPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
+    return navPanel;
+}
+
+    private static JPanel getLogoPanel() {
+        JPanel logoPanel = new JPanel() {
             @Override
-            public void componentResized(ComponentEvent e) {
-                adjustMenuItems();
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Load the logo image
+                ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
+                Image logoImage = logoIcon.getImage();
+                // Draw the logo image
+                g2.drawImage(logoImage, 0, 0, getWidth(), getHeight(), this);
             }
-        });
-
-        // Show the initial view
-        showPanel("Home");
-        updateButtonColors(homeButton);
-        updateFrameTitle("Home");
-        updateButtonVisibility();
-
-        frame.setVisible(true);
+        };
+        logoPanel.setPreferredSize(new Dimension(80, 50));
+        logoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        return logoPanel;
     }
 
-    private void adjustMenuItems() {
-        int frameWidth = frame.getWidth();
-
-        int buttonsTotalWidth = homeButton.getPreferredSize().width + blogButton.getPreferredSize().width
-                + postButton.getPreferredSize().width + aboutButton.getPreferredSize().width
-                + loginButton.getPreferredSize().width + logoutButton.getPreferredSize().width;
-
-        if (frameWidth < buttonsTotalWidth + 200) {
-            homeButton.setVisible(false);
-            blogButton.setVisible(false);
-            postButton.setVisible(false);
-            aboutButton.setVisible(false);
-            loginButton.setVisible(false);
-            logoutButton.setVisible(false);
-
-            // Add buttons to the hamburger menu
-            if (hamburgerMenu.getItemCount() == 0) {
-                hamburgerMenu.add(createMenuItemFromButton(homeButton));
-                hamburgerMenu.add(createMenuItemFromButton(blogButton));
-                hamburgerMenu.add(createMenuItemFromButton(postButton));
-                hamburgerMenu.add(createMenuItemFromButton(aboutButton));
-                hamburgerMenu.add(createMenuItemFromButton(loginButton));
-                hamburgerMenu.add(createMenuItemFromButton(logoutButton));
-            }
-        } else {
-            // Show buttons and hide hamburger menu
-            homeButton.setVisible(true);
-            blogButton.setVisible(true);
-            postButton.setVisible(true);
-            aboutButton.setVisible(true);
-            loginButton.setVisible(true);
-            if (loggedInUser != null) {
-                logoutButton.setVisible(true);
-            }
-            hamburgerMenu.removeAll();
+    private JButton createStyledButton(String text) {
+        Font lobsterFont = loadFont();
+        if (lobsterFont == null) {
+            lobsterFont = new Font("Arial", Font.BOLD, 20);
         }
-    }
-
-    private JMenuItem createMenuItemFromButton(JButton button) {
-        JMenuItem menuItem = new JMenuItem(button.getText());
-        menuItem.setPreferredSize(new Dimension(menuItem.getPreferredSize().width, 50)); // Set custom height
-        for (java.awt.event.ActionListener al : button.getActionListeners()) {
-            menuItem.addActionListener(al);
-        }
-        return menuItem;
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(100, 40));
+        button.setFocusPainted(false);
+        button.setFont(new Font("SansSerif", Font.ITALIC, 16));
+        button.setBackground(Color.WHITE);
+        button.setForeground(Color.BLACK);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        button.setContentAreaFilled(false);
+        button.setOpaque(false);
+        return button;
     }
 
     private JPanel createContactPanel() {
@@ -208,9 +225,9 @@ public final class Easy_Travel {
         JButton[] buttons = {homeButton, blogButton, postButton, aboutButton, loginButton, logoutButton};
         for (JButton button : buttons) {
             if (button == activeButton) {
-                button.setBackground(Color.LIGHT_GRAY);
+                button.setForeground(Color.decode("#FFFFFF"));
             } else {
-                button.setBackground(UIManager.getColor("Button.background"));
+                button.setForeground(Color.decode("#000000"));
             }
         }
     }
@@ -240,6 +257,45 @@ public final class Easy_Travel {
         } else {
             loginButton.setVisible(false);
             logoutButton.setVisible(true);
+        }
+    }
+
+    private void adjustMenuItems() {
+        int frameWidth = frame.getWidth();
+
+        homeButton.setVisible(true);
+        blogButton.setVisible(true);
+        postButton.setVisible(true);
+        aboutButton.setVisible(true);
+        if (loggedInUser == null) {
+            loginButton.setVisible(true);
+            logoutButton.setVisible(false);
+        } else {
+            loginButton.setVisible(false);
+            logoutButton.setVisible(true);
+        }
+
+
+    }
+
+    private JMenuItem createMenuItemFromButton(JButton button) {
+        JMenuItem menuItem = new JMenuItem(button.getText());
+        menuItem.setPreferredSize(new Dimension(menuItem.getPreferredSize().width, 50)); // Set custom height
+        for (java.awt.event.ActionListener al : button.getActionListeners()) {
+            menuItem.addActionListener(al);
+        }
+        return menuItem;
+    }
+    public Font loadFont() {
+        try (InputStream is = getClass().getResourceAsStream("/Lobster-Regular.ttf")) {
+            assert is != null;
+            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(font);
+            return font;
+        } catch (FontFormatException | IOException | NullPointerException e) {
+            System.err.println("Failed to load font: " + "/Lobster-Regular.ttf");
+            return null;
         }
     }
 }
