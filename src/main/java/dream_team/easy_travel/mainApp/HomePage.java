@@ -1,4 +1,5 @@
 package dream_team.easy_travel.mainApp;
+
 import dream_team.easy_travel.Easy_Travel;
 import javax.swing.*;
 import java.awt.*;
@@ -47,23 +48,16 @@ public class HomePage extends JPanel {
             yOffset += 30;
         }
 
-        CustomButton exploreButton = new CustomButton("Get Started", 30);
+    CustomButton exploreButton = new CustomButton("Explore", 30);
         exploreButton.setBounds(120, 385, 150, 50);
         imageLabel.add(exploreButton);
 
         exploreButton.addActionListener(e -> {
-             app.showPanel("Login");
+             app.showPanel("Blog");
         });
-
-
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         add(centerPanel, BorderLayout.CENTER);
-
-//        JButton goToHomeButton = new JButton("Go to Login");
-//        goToHomeButton.addActionListener(e -> app.showPanel("Login"));
-//        goToHomeButton.setBounds(0, 700, 1200, 50);
-//        imageLabel.add(goToHomeButton, BorderLayout.SOUTH);
     }
 
     private ImageIcon loadImageIcon() {
@@ -89,6 +83,4 @@ public class HomePage extends JPanel {
             return null;
         }
     }
-
-
 }

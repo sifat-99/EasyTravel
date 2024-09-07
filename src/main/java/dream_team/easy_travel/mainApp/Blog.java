@@ -7,9 +7,11 @@ import java.awt.*;
 import java.util.Objects;
 
 public class Blog extends JPanel {
+
     public Blog(Easy_Travel app) {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
+
 
         ImageIcon imageIcon = loadImageIcon();
         if (imageIcon == null) {
@@ -17,7 +19,6 @@ public class Blog extends JPanel {
         }
         JLabel imageLabel = new JLabel(imageIcon);
         add(imageLabel, BorderLayout.NORTH);
-
     }
 
     private ImageIcon loadImageIcon() {
@@ -30,6 +31,4 @@ public class Blog extends JPanel {
             return null;
         }
     }
-
-
 }

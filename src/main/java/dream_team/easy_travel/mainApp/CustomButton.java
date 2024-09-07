@@ -12,6 +12,8 @@ public class CustomButton extends JButton {
         setContentAreaFilled(false);
     }
 
+
+
     public void setCornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
         repaint();
