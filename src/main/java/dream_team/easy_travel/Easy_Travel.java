@@ -1,10 +1,6 @@
 package dream_team.easy_travel;
 
-import dream_team.easy_travel.mainApp.AboutUsPanel;
-import dream_team.easy_travel.mainApp.Blog;
-import dream_team.easy_travel.mainApp.HomePage;
-import dream_team.easy_travel.mainApp.LoginPanel;
-import dream_team.easy_travel.mainApp.User;
+import dream_team.easy_travel.mainApp.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,6 +88,7 @@ public final class Easy_Travel {
         contentPanel.add(new AboutUsPanel(this), "About");
         contentPanel.add(new Blog(this), "Blog");
         contentPanel.add(new LoginPanel(this), "Login");
+        contentPanel.add(new SignUp(this), "SignUp");
 
         // Add action listeners to buttons
         homeButton.addActionListener(e -> {
@@ -221,9 +218,9 @@ public final class Easy_Travel {
     public void updateFrameTitle(String title) {
         User user = getLoggedInUser();
         if (user == null) {
-            frame.setTitle("Easy Travel - " + title);
+            frame.setTitle("Easy Travel - " + title + " - Guest");
         } else {
-            frame.setTitle("Easy Travel" + title + " - " + user.getUsername());
+            frame.setTitle("Easy Travel - " + user.getName() + " || " + title);
         }
     }
 

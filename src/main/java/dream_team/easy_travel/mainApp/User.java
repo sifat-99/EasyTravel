@@ -2,18 +2,27 @@ package dream_team.easy_travel.mainApp;
 
 public class User {
     private String username;
-    private String email;
+    private String password;
+    private String name;
 
-    public User(String username, String email) {
+    // Constructor
+    public User(String name, String username, String password) {
+        this.name = name;
         this.username = username;
-        this.email = email;
+        this.password = password;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    // Getter for username
     public String getUsername() {
         return username;
     }
 
-    public String getEmail() {
-        return email;
+    // Getter for password
+    public String getPassword() {
+        return password;
     }
 }
