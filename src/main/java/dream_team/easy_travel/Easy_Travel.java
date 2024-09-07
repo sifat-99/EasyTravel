@@ -33,6 +33,7 @@ public final class Easy_Travel {
         ImageIcon Logo = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
         frame.setIconImage(Logo.getImage());
 
+
         // Create the custom menu bar with rounded style
         JPanel menuBar = createMenuBar();
 
@@ -83,15 +84,21 @@ public final class Easy_Travel {
         menuBar.setBackground(Color.WHITE);
         menuBar.setPreferredSize(new Dimension(1200, 80));
 
-        ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
-        Image logoImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-        logoIcon = new ImageIcon(logoImage);
+//        ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
+//        Image logoImage = logoIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+//        logoIcon = new ImageIcon(logoImage);
+//
+//
+//        // Create the logo label with the resized image
+//        JLabel logoLabel = new JLabel(logoIcon);
+//        logoLabel.setPreferredSize(new Dimension(120, 120));
+////        logoLabel.setHorizontalAlignment(SwingConstants.LEFT);
+////        logoLabel.setVerticalAlignment(SwingConstants.TOP);
+//        logoLabel.setBounds(0, 0, 120, 120);
 
-        // Create the logo label with the resized image
-        JLabel logoLabel = new JLabel(logoIcon);
-        logoLabel.setPreferredSize(new Dimension(120, 120));
-        logoLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        logoLabel.setVerticalAlignment(SwingConstants.TOP);
+        JPanel logoPanel = getLogoPanel();
+
+
 
         JPanel navPanel = getNavPanel();
 
@@ -114,8 +121,10 @@ public final class Easy_Travel {
         navPanel.add(logoutButton);
 
         // Add logo and navigation panels to the menu bar
-        menuBar.add(logoLabel, BorderLayout.WEST);
+//        menuBar.add(logoLabel, BorderLayout.WEST);
+        menuBar.add(logoPanel, BorderLayout.WEST);
         menuBar.add(navPanel, BorderLayout.EAST);
+
 
         // Add action listeners to the buttons
         homeButton.addActionListener(e -> {
@@ -173,24 +182,35 @@ public final class Easy_Travel {
     return navPanel;
 }
 
-    private static JPanel getLogoPanel() {
-        JPanel logoPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Load the logo image
-                ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
-                Image logoImage = logoIcon.getImage();
-                // Draw the logo image
-                g2.drawImage(logoImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        };
-        logoPanel.setPreferredSize(new Dimension(80, 50));
-        logoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
-        return logoPanel;
-    }
+private static JPanel getLogoPanel() {
+    JPanel logoPanel = new JPanel(new GridBagLayout()) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            // Draw rounded rectangle on the right side
+            g2.setColor(Color.decode("#46BBF7"));
+            int arcSize = 40;
+            g2.fillRoundRect(getWidth() - arcSize, 0, arcSize, getHeight(), arcSize, arcSize); // Right side with rounded corners
+            g2.fillRect(0, 0, getWidth() - arcSize / 2, getHeight()); // Left side without rounded corners
+        }
+    };
+    logoPanel.setOpaque(false);
+    logoPanel.setPreferredSize(new Dimension(120, 80)); // Adjust the size to ensure visibility
+
+    // Create the logo label with the resized image
+    ImageIcon logoIcon = new ImageIcon(Objects.requireNonNull(Easy_Travel.class.getResource("/logo.png")));
+    Image logoImage = logoIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+    logoIcon = new ImageIcon(logoImage);
+    JLabel logoLabel = new JLabel(logoIcon);
+    logoLabel.setPreferredSize(new Dimension(120, 120));
+
+    // Add the logo label to the center of the logo panel
+    logoPanel.add(logoLabel, new GridBagConstraints());
+
+    return logoPanel;
+}
 
     private JButton createStyledButton(String text) {
         Font lobsterFont = loadFont();
