@@ -1,17 +1,29 @@
 package dream_team.easy_travel.mainApp;
-
+import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
-
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import javax.imageio.ImageIO;
 
 public class Blog extends JPanel {
+    private List<BlogPost> blogPosts;
+    private JPanel cardPanel;
 
-    public Blog(Easy_Travel app) {
+    public Blog(List<BlogPost> blogPosts, Easy_Travel app) {
+        this.blogPosts = blogPosts;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
@@ -27,35 +39,57 @@ public class Blog extends JPanel {
         imageLabel.setBounds(0, 0, 1200, 750);
         layeredPane.add(imageLabel, Integer.valueOf(0));
 
-        // Create a panel with GridLayout(0, 2) to allow 2 cards per row and vertical growth
-        JPanel cardPanel = new JPanel(new GridLayout(0, 2, 10, 10)); // 0 rows, 2 columns, 10px gap
-        cardPanel.setOpaque(false); // Make sure the panel is transparent so the background image is visible
+        cardPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        cardPanel.setOpaque(false);
 
-        // Add cards with titles and descriptions
-        for (int i = 1; i <= 8; i++) {
-            String title = "Card Title " + i;
-            String description = "This is a description for Card " + i + ". It contains some example text.";
-            JPanel card = createCard(title, description);
-            cardPanel.add(card);
-        }
+        // Load initial blog posts
+        loadBlogPosts();
 
-        // Wrap the cardPanel inside a scrollable container
         JScrollPane scrollPane = new JScrollPane(cardPanel);
-        scrollPane.setBounds(50, 50, 1100, 600); // Adjust size and position of scroll pane
-        scrollPane.setOpaque(false); // Make scroll pane background transparent
-        scrollPane.getViewport().setOpaque(false); // Make viewport background transparent
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Always show vertical scrollbar
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Disable horizontal scroll
+        scrollPane.setBounds(50, 50, 1100, 600);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // Add the scroll pane as the top layer
         layeredPane.add(scrollPane, Integer.valueOf(1));
 
-        add(layeredPane, BorderLayout.CENTER); // Add the layered pane to the main panel
+        add(layeredPane, BorderLayout.CENTER);
+    }
+
+    public void loadBlogPosts() {
+        blogPosts = fetchBlogPostsFromDatabase();
+        cardPanel.removeAll();
+        for (BlogPost post : blogPosts) {
+            JPanel card = createCard(post.getTitle(), post.getDescription(), post.getImage(), post.getId());
+            cardPanel.add(card);
+        }
+        cardPanel.revalidate();
+        cardPanel.repaint();
+    }
+
+    private List<BlogPost> fetchBlogPostsFromDatabase() {
+        List<BlogPost> posts = new ArrayList<>();
+        String query = "SELECT id, title, description, image1 FROM blog_posts";
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String description = rs.getString("description");
+                byte[] image = rs.getBytes("image1");
+                posts.add(new BlogPost(id, title, description, image));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return posts;
     }
 
     private ImageIcon loadImageIcon() {
         try {
-            ImageIcon icon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/HomeBG.png")));
+            ImageIcon icon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BlogBG.jpg")));
             Image image = icon.getImage().getScaledInstance(1200, 750, Image.SCALE_SMOOTH);
             return new ImageIcon(image);
         } catch (NullPointerException e) {
@@ -64,39 +98,42 @@ public class Blog extends JPanel {
         }
     }
 
-    // Create a card with a border, title, and description
-    private JPanel createCard(String title, String description) {
+    private JPanel createCard(String title, String description, byte[] imageBytes, int blogId) {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
-        card.setOpaque(false); // Make the card background transparent
-        card.setPreferredSize(new Dimension(500, 400)); // Set the fixed card height and width
+        card.setOpaque(false);
+        card.setSize(500, 800);
         card.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                title, TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 14), Color.BLUE)
+                title, TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 20), Color.WHITE)
         );
 
-        // Add card content
-        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        titleLabel.setForeground(Color.BLUE);
+        JLabel imageLabel = new JLabel();
+        if (imageBytes != null) {
+            try {
+                BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
+                if (img != null) {
+                    ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(500, 400, Image.SCALE_SMOOTH));
+                    imageLabel.setIcon(imageIcon);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
+        JButton moreDetailsButton = new JButton("More Details");
+        moreDetailsButton.addActionListener(e -> {
+            // app.showBlogPostDetails(blogId); // Implement this method to navigate to the details page
+        });
 
-        JTextArea descriptionArea = new JTextArea(description);
-        descriptionArea.setLineWrap(true);
-        descriptionArea.setWrapStyleWord(true);
-        descriptionArea.setEditable(false);
-        descriptionArea.setOpaque(false);
-        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 12));
+        card.add(imageLabel, BorderLayout.NORTH);
+        card.add(new JLabel("<html>" + description + "</html>", SwingConstants.CENTER), BorderLayout.CENTER);
+        card.add(moreDetailsButton, BorderLayout.SOUTH);
 
-        card.add(titleLabel, BorderLayout.NORTH);
-        card.add(descriptionArea, BorderLayout.CENTER);
-
-        // Add mouse click event to the card
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println(title + " clicked");
-                // Add your click event logic here
+                // app.showBlogPostDetails(blogId); // Navigate to the blog post details page
             }
         });
 

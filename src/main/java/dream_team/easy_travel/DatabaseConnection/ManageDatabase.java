@@ -9,14 +9,13 @@ import java.sql.SQLException;
 
 public class ManageDatabase {
     public void addNewUser(String name, String username, String password) {
-        String query = "INSERT INTO Users (id,name, username, password) VALUES (?,?, ?, ?)";
+        String query = "INSERT INTO Users (name, username, password) VALUES (?, ?, ?)";
         try {
             Connection conn = ConnectDB.getConnection();
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, 0);
-            stmt.setString(2, name);
-            stmt.setString(3, username);
-            stmt.setString(4, password);
+            stmt.setString(1, name);
+            stmt.setString(2, username);
+            stmt.setString(3, password);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
