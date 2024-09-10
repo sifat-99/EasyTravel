@@ -26,7 +26,7 @@ public final class Easy_Travel {
     private JButton loginButton;
     private JButton logoutButton;
     private User loggedInUser;
-    private List<BlogPost> blogPosts;
+    private final List<BlogPost> blogPosts;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Easy_Travel::new);
