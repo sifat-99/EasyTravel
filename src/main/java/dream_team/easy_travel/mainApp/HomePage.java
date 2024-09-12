@@ -49,7 +49,7 @@ public class HomePage extends JPanel {
         }
 
     CustomButton exploreButton = new CustomButton("Explore", 30);
-        exploreButton.setBounds(120, 385, 150, 50);
+        exploreButton.setBounds(105, 385, 150, 50);
         imageLabel.add(exploreButton);
 
         exploreButton.addActionListener(e -> {
