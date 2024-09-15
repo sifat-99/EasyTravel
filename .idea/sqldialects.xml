@@ -2,5 +2,8 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/dream_team/easy_travel/DatabaseConnection/ManageDatabase.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/dream_team/easy_travel/Easy_Travel.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/dream_team/easy_travel/mainApp/Blog.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/main/java/dream_team/easy_travel/mainApp/PostBlog.java" dialect="GenericSQL" />
   </component>
 </project>

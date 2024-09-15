@@ -94,8 +94,8 @@ public final class Easy_Travel {
     private void loadInitialBlogPosts() {
         String query = "SELECT * FROM blog_posts";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");

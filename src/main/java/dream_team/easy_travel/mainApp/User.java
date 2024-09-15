@@ -1,9 +1,9 @@
 package dream_team.easy_travel.mainApp;
 
 public class User {
-    private String username;
-    private String password;
-    private String name;
+    private final String username;
+    private final String password;
+    private final String name;
 
     // Constructor
     public User(String name, String username, String password) {

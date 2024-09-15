@@ -10,25 +10,26 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PostBlog extends JPanel {
-    private JTextField titleField;
-    private JTextField locationField;
-    private JTextArea descriptionArea;
-    private List<JTextField> restaurantNames = new ArrayList<>();
-    private List<JTextField> restaurantLocations = new ArrayList<>();
-    private List<JTextField> restaurantRatings = new ArrayList<>();
-    private List<JTextField> restaurantPrices = new ArrayList<>();
-    private List<byte[]> imagePaths = new ArrayList<>();
-    private List<BlogPost> blogPosts;
-    private Easy_Travel app; // Add a reference to Easy_Travel
+    private final JTextField titleField;
+    private final JTextField locationField;
+    private final JTextArea descriptionArea;
+    private final List<JTextField> restaurantNames = new ArrayList<>();
+    private final List<JTextField> restaurantLocations = new ArrayList<>();
+    private final List<JTextField> restaurantRatings = new ArrayList<>();
+    private final List<JTextField> restaurantPrices = new ArrayList<>();
+    private final List<byte[]> imagePaths = new ArrayList<>();
+    private final List<BlogPost> blogPosts;
+    private final Easy_Travel app; // Add a reference to Easy_Travel
 
     public PostBlog(List<BlogPost> blogPosts, Easy_Travel app) {
         this.blogPosts = blogPosts;
-        this.app = app; // Initialize the reference
+        this.app = app;
         setLayout(null);
 
         JLabel titleLabel = new JLabel("Title");
@@ -151,16 +152,41 @@ public class PostBlog extends JPanel {
 
     private void saveBlogPostToDatabase(String title, String location, String description, List<String[]> restaurantData, List<byte[]> imagePaths) {
         String insertBlogSQL = "INSERT INTO blog_posts (title, location, description, image1, image2, image3) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertRestaurantSQL = "INSERT INTO Nearby_Restaurants (blog_post_id, name, location, rating, price) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(insertBlogSQL)) {
-            pstmt.setString(1, title);
-            pstmt.setString(2, location);
-            pstmt.setString(3, description);
-            pstmt.setBytes(4, imagePaths.get(0));
-            pstmt.setBytes(5, imagePaths.get(1));
-            pstmt.setBytes(6, imagePaths.get(2));
-            pstmt.executeUpdate();
+             PreparedStatement stmt = conn.prepareStatement(insertBlogSQL)) {
+            stmt.setString(1, title);
+            stmt.setString(2, location);
+            stmt.setString(3, description);
+            stmt.setBytes(4, imagePaths.get(0));
+            stmt.setBytes(5, imagePaths.get(1));
+            stmt.setBytes(6, imagePaths.get(2));
+            stmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "Blog post created successfully");
+
+            // Get the ID of the newly inserted blog post
+            int blogId = -1;
+            try (PreparedStatement idStmt = conn.prepareStatement("SELECT MAX(id) FROM blog_posts");
+                 ResultSet rs = idStmt.executeQuery()) {
+                if (rs.next()) {
+                    blogId = rs.getInt(1);
+                }
+            }
+            if (blogId == -1) {
+                throw new SQLException("Failed to retrieve blog ID");
+            }
+            else {
+                for (String[] data : restaurantData) {
+                    try (PreparedStatement restaurantStmt = conn.prepareStatement(insertRestaurantSQL)) {
+                        restaurantStmt.setInt(1, blogId);
+                        restaurantStmt.setString(2, data[0]);
+                        restaurantStmt.setString(3, data[1]);
+                        restaurantStmt.setString(4, data[2]);
+                        restaurantStmt.setString(5, data[3]);
+                        restaurantStmt.executeUpdate();
+                    }
+                }
+            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Failed to save blog post: " + ex.getMessage());
         }

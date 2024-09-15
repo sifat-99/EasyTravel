@@ -20,12 +20,13 @@ import javax.imageio.ImageIO;
 
 public class Blog extends JPanel {
     private List<BlogPost> blogPosts;
-    private JPanel cardPanel;
+    private final JPanel cardPanel;
 
     public Blog(List<BlogPost> blogPosts, Easy_Travel app) {
         this.blogPosts = blogPosts;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
+
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 750));
@@ -44,6 +45,7 @@ public class Blog extends JPanel {
 
         // Load initial blog posts
         loadBlogPosts();
+
 
         JScrollPane scrollPane = new JScrollPane(cardPanel);
         scrollPane.setBounds(50, 50, 1100, 600);
@@ -72,8 +74,8 @@ public class Blog extends JPanel {
         List<BlogPost> posts = new ArrayList<>();
         String query = "SELECT id, title, description, image1 FROM blog_posts";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
@@ -139,4 +141,5 @@ public class Blog extends JPanel {
 
         return card;
     }
+
 }

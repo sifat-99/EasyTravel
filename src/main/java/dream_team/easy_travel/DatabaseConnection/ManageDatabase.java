@@ -1,5 +1,6 @@
 package dream_team.easy_travel.DatabaseConnection;
 
+import dream_team.easy_travel.mainApp.BlogPost;
 import dream_team.easy_travel.mainApp.User;
 
 import java.sql.Connection;
@@ -52,5 +53,7 @@ public class ManageDatabase {
         // Return null if no user is found or an exception occurs
         return null;
     }
+
+
 
 }
