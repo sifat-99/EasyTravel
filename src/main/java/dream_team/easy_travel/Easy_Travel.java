@@ -61,6 +61,8 @@ public final class Easy_Travel {
         contentPanel.add(new Blog(blogPosts,this), "Blog");
         contentPanel.add(new LoginPanel(this), "Login");
         contentPanel.add(new SignUp(this), "SignUp");
+        contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
+
 
         // Create a layered pane to hold the logoPanel and contentPanel
         JLayeredPane layeredPane = new JLayeredPane();

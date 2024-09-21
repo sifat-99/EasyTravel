@@ -3,6 +3,7 @@ package dream_team.easy_travel.DatabaseConnection;
 import dream_team.easy_travel.mainApp.BlogPost;
 import dream_team.easy_travel.mainApp.User;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,6 +54,26 @@ public class ManageDatabase {
         // Return null if no user is found or an exception occurs
         return null;
     }
+
+    public void loadBlogPostDetails(int blogId) {
+        // Load blog post details from database
+        String query = "SELECT * FROM BlogPosts WHERE id = ?";
+
+        try (Connection conn = ConnectDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, blogId);
+            ResultSet rs = stmt.executeQuery();
+           if(rs.next()) {
+               String title = rs.getString("title");
+               String description = rs.getString("description");
+               byte[] image = rs.getBytes("image");
+               BlogPost blogPost = new BlogPost(blogId, title, description, image);
+           }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 

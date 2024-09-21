@@ -21,11 +21,13 @@ import javax.imageio.ImageIO;
 public class Blog extends JPanel {
     private List<BlogPost> blogPosts;
     private final JPanel cardPanel;
+    public Easy_Travel app;
 
     public Blog(List<BlogPost> blogPosts, Easy_Travel app) {
         this.blogPosts = blogPosts;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
+        this.app = app;
 
 
         JLayeredPane layeredPane = new JLayeredPane();
@@ -135,7 +137,7 @@ public class Blog extends JPanel {
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // app.showBlogPostDetails(blogId); // Navigate to the blog post details page
+                // app.showBlogPostDetails(blogId); // Implement this method to navigate to the details page
             }
         });
 
