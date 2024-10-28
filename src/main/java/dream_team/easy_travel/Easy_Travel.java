@@ -13,9 +13,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.text.DecimalFormat;
+import java.util.Locale;
+import net.miginfocom.swing.MigLayout;
 
 public final class Easy_Travel {
     private final JFrame frame;
@@ -27,6 +31,15 @@ public final class Easy_Travel {
     private JButton logoutButton;
     private User loggedInUser;
     private final List<BlogPost> blogPosts;
+    private PanelLoginAndRegister loginAndRegister;
+    private final DecimalFormat df = new DecimalFormat("##0.###", DecimalFormatSymbols.getInstance(Locale.US));
+    private MigLayout layout;
+    private PanelCover cover;
+//    private PanelLoginAndRegister loginAndRegister;
+    private boolean isLogin = true;
+    private final double addSize = 30;
+    private final double coverSize = 40;
+    private final double loginSize = 60;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Easy_Travel::new);
@@ -62,8 +75,7 @@ public final class Easy_Travel {
         contentPanel.add(new LoginPanel(this), "Login");
         contentPanel.add(new SignUp(this), "SignUp");
         contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
-
-
+        contentPanel.add(new LoginRunner(this), "LoginRunner");
         // Create a layered pane to hold the logoPanel and contentPanel
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 800));
@@ -163,7 +175,7 @@ public final class Easy_Travel {
             updateFrameTitle("About");
         });
         loginButton.addActionListener(e -> {
-            showPanel("Login");
+            showPanel("LoginRunner");
             updateButtonColors(loginButton);
             updateFrameTitle("Login");
         });
@@ -339,4 +351,6 @@ public final class Easy_Travel {
             return null;
         }
     }
+
+
 }

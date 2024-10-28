@@ -56,14 +56,13 @@ public class LoginPanel extends JPanel {
                     passwordField.setEchoChar((char) 0);
                     finalViewText.setText("Hide");
                 } else {
-                    passwordField.setEchoChar('\u2022');
+                    passwordField.setEchoChar('•');
                     finalViewText.setText("View");
                 }
             }
         });
 
         JButton loginButton = createCustomButton(Color.decode("#46BBF7"), new Font("Arial", Font.BOLD, 16));
-
         JLabel gotoSignUp = new JLabel("Don't have an account? Sign Up");
 
         // Set bounds for components
@@ -97,7 +96,6 @@ public class LoginPanel extends JPanel {
             String password = new String(passwordField.getPassword());
             if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields");
-                return;
             } else {
                 try {
                     ManageDatabase db = new ManageDatabase();
