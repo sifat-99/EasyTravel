@@ -26,7 +26,7 @@ public class Blog extends JPanel {
     public Blog(List<BlogPost> blogPosts, Easy_Travel app) {
         this.blogPosts = blogPosts;
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(Color.BLUE);
         this.app = app;
 
 
@@ -50,7 +50,7 @@ public class Blog extends JPanel {
 
 
         JScrollPane scrollPane = new JScrollPane(cardPanel);
-        scrollPane.setBounds(50, 50, 1100, 600);
+        scrollPane.setBounds(200, 50, 800, 600);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -83,7 +83,7 @@ public class Blog extends JPanel {
                 String title = rs.getString("title");
                 String description = rs.getString("description");
                 byte[] image = rs.getBytes("image1");
-                posts.add(new BlogPost(id, title, description, image));
+                posts.add(new BlogPost(id, title, "Description will be hare", image));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,7 +106,7 @@ public class Blog extends JPanel {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setOpaque(false);
-        card.setSize(500, 800);
+        card.setSize(400, 1000);
         card.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
                 title, TitledBorder.CENTER, TitledBorder.TOP, new Font("Arial", Font.BOLD, 20), Color.WHITE)
@@ -117,7 +117,7 @@ public class Blog extends JPanel {
             try {
                 BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
                 if (img != null) {
-                    ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(500, 400, Image.SCALE_SMOOTH));
+                    ImageIcon imageIcon = new ImageIcon(img.getScaledInstance(400, 400, Image.SCALE_SMOOTH));
                     imageLabel.setIcon(imageIcon);
                 }
             } catch (IOException e) {
