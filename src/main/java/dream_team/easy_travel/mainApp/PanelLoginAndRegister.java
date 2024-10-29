@@ -1,6 +1,5 @@
 package dream_team.easy_travel.mainApp;
 
-
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -32,7 +31,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         register.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
         JLabel label = new JLabel("Create Account");
         label.setFont(new Font("sansserif", Font.BOLD, 30));
-        label.setForeground(new Color(7, 164, 121));
+        label.setForeground(new Color(0, 0, 0));
         register.add(label);
         MyTextField txtUser = new MyTextField();
         txtUser.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/user.png"), "Image not found: /com/raven/icon/user.png")));
@@ -48,7 +47,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         register.add(txtPass, "w 60%");
 
         Button cmd = new Button();
-        cmd.setBackground(new Color(7, 164, 121));
+        cmd.setBackground(new Color(0, 0, 0));
         cmd.setForeground(new Color(250, 250, 250));
         cmd.setText("SIGN UP");
         register.add(cmd, "w 40%, h 40");
@@ -80,12 +79,12 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     private void initLogin() {
         login.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
         JLabel label = new JLabel("Sign In");
-        label.setFont(new Font("sansserif", 1, 30));
-        label.setForeground(new Color(7, 164, 121));
+        label.setFont(new Font("SansSerif", Font.BOLD, 30));
+        label.setForeground(new Color(9, 9, 9));
         login.add(label);
 
         MyTextField txtEmail = new MyTextField();
-        txtEmail.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/mail.png"), "Image not found: /com/raven/icon/mail.png")));
+        txtEmail.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/mail.png"), "Image not found: /mail.png")));
         txtEmail.setHint("Email");
         login.add(txtEmail, "w 60%");
 
@@ -93,7 +92,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         passwordPanel.setBackground(Color.WHITE);
 
         MyPasswordField txtPass = new MyPasswordField();
-        txtPass.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/pass.png"), "Image not found: /com/raven/icon/pass.png")));
+        txtPass.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/pass.png"), "Image not found: /pass.png")));
         txtPass.setHint("Password");
         passwordPanel.add(txtPass, "w 90%");
 
@@ -122,13 +121,13 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         JButton cmdForget = new JButton("Forgot your password ?");
         cmdForget.setForeground(new Color(100, 100, 100));
-        cmdForget.setFont(new Font("sansserif", 1, 12));
+        cmdForget.setFont(new Font("SansSerif", Font.BOLD, 12));
         cmdForget.setContentAreaFilled(false);
         cmdForget.setCursor(new Cursor(Cursor.HAND_CURSOR));
         login.add(cmdForget);
 
         Button cmd = new Button();
-        cmd.setBackground(new Color(7, 164, 121));
+        cmd.setBackground(new Color(0, 0, 0));
         cmd.setForeground(new Color(250, 250, 250));
         cmd.setText("SIGN IN");
         login.add(cmd, "w 40%, h 40");
@@ -156,19 +155,9 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 }
             }
         });
-
-
-
-
-
-
-
-
 }
 
-
-
-    public void showRegister(boolean show) {
+public void showRegister(boolean show) {
         if (show) {
             register.setVisible(true);
             login.setVisible(false);

@@ -37,18 +37,18 @@ public class PanelCover extends javax.swing.JPanel {
 
     private void init() {
         title = new JLabel("Welcome Back!");
-        title.setFont(new Font("sansserif", 1, 30));
-        title.setForeground(new Color(245, 245, 245));
+        title.setFont(new Font("sansserif", Font.BOLD, 30));
+        title.setForeground(new Color(0, 0, 0));
         add(title);
         description = new JLabel("To keep connected with us please");
-        description.setForeground(new Color(245, 245, 245));
+        description.setForeground(new Color(0, 0, 0));
         add(description);
         description1 = new JLabel("login with your personal info");
-        description1.setForeground(new Color(245, 245, 245));
+        description1.setForeground(new Color(0, 0, 0));
         add(description1);
         button = new ButtonOutLine();
-        button.setBackground(new Color(255, 255, 255));
-        button.setForeground(new Color(255, 255, 255));
+        button.setBackground(new Color(0, 0, 0));
+        button.setForeground(new Color(0, 0, 0));
         button.setText("SIGN IN");
         button.addActionListener(new ActionListener() {
             @Override
@@ -78,7 +78,7 @@ public class PanelCover extends javax.swing.JPanel {
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs;
-        GradientPaint gra = new GradientPaint(0, 0, new Color(35, 166, 97), 0, getHeight(), new Color(22, 116, 66));
+        GradientPaint gra = new GradientPaint(0, 0, new Color(70, 187, 247), 0, getHeight(), new Color(47, 245, 228));
         g2.setPaint(gra);
         g2.fillRect(0, 0, getWidth(), getHeight());
         super.paintComponent(grphcs);
