@@ -76,7 +76,6 @@ public final class Easy_Travel {
         contentPanel.add(new SignUp(this), "SignUp");
         contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
         contentPanel.add(new LoginRunner(this), "LoginRunner");
-        // Create a layered pane to hold the logoPanel and contentPanel
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 800));
 
@@ -104,6 +103,8 @@ public final class Easy_Travel {
 
         frame.setVisible(true);
     }
+
+
 
     private void loadInitialBlogPosts() {
         String query = "SELECT * FROM blog_posts";
@@ -353,4 +354,7 @@ public final class Easy_Travel {
     }
 
 
+    public JFrame getFrame() {
+        return frame;
+    }
 }

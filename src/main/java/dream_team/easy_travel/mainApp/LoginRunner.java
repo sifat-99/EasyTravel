@@ -9,7 +9,7 @@ import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import net.miginfocom.swing.MigLayout;
+
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 import org.jdesktop.animation.timing.TimingTargetAdapter;
@@ -28,14 +28,14 @@ public class LoginRunner extends JPanel {
         setVisible(true);
         setLayout(null);
         setSize(800, 600);
-        init();
+        init(app);
     }
 
 
-    private void init() {
+    private void init(Easy_Travel app) {
         layout = new MigLayout("fill, insets 0");
         cover = new PanelCover();
-        loginAndRegister = new PanelLoginAndRegister();
+        loginAndRegister = new PanelLoginAndRegister(app);
         TimingTarget target = new TimingTargetAdapter() {
             @Override
             public void timingEvent(float fraction) {

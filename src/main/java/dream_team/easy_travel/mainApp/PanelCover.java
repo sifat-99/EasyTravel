@@ -1,17 +1,16 @@
 package dream_team.easy_travel.mainApp;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Objects;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-
 import dream_team.easy_travel.swing.ButtonOutLine;
 import net.miginfocom.swing.MigLayout;
 
@@ -25,30 +24,32 @@ public class PanelCover extends javax.swing.JPanel {
     private JLabel description1;
     private ButtonOutLine button;
     private boolean isLogin;
+    private Image backgroundImage;
 
     public PanelCover() {
-        initComponents();
+//        initComponents();
         setOpaque(false);
-        layout = new MigLayout("wrap, fill", "[center]", "push[]25[]10[]25[]push");
+        layout = new MigLayout("wrap, h 20%", "left", "push[]10[]5[]5[]push");
         setLayout(layout);
         init();
-
+        // Load the background image
+        backgroundImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/LoginBG.gif"),"Image not found")).getImage();
     }
 
     private void init() {
         title = new JLabel("Welcome Back!");
-        title.setFont(new Font("sansserif", Font.BOLD, 30));
-        title.setForeground(new Color(0, 0, 0));
+        title.setFont(new java.awt.Font("SansSerif", java.awt.Font.BOLD, 30));
+        title.setForeground(new java.awt.Color(0, 0, 0));
         add(title);
         description = new JLabel("To keep connected with us please");
-        description.setForeground(new Color(0, 0, 0));
+        description.setForeground(new java.awt.Color(4, 4, 4));
         add(description);
         description1 = new JLabel("login with your personal info");
-        description1.setForeground(new Color(0, 0, 0));
+        description1.setForeground(new java.awt.Color(0, 0, 0));
         add(description1);
         button = new ButtonOutLine();
-        button.setBackground(new Color(0, 0, 0));
-        button.setForeground(new Color(0, 0, 0));
+        button.setBackground(new java.awt.Color(0, 0, 0));
+        button.setForeground(new java.awt.Color(0, 0, 0));
         button.setText("SIGN IN");
         button.addActionListener(new ActionListener() {
             @Override
@@ -59,28 +60,11 @@ public class PanelCover extends javax.swing.JPanel {
         add(button, "w 60%, h 40");
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-
     @Override
     protected void paintComponent(Graphics grphcs) {
         Graphics2D g2 = (Graphics2D) grphcs;
-        GradientPaint gra = new GradientPaint(0, 0, new Color(70, 187, 247), 0, getHeight(), new Color(47, 245, 228));
-        g2.setPaint(gra);
-        g2.fillRect(0, 0, getWidth(), getHeight());
+        // Draw the background image
+        g2.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         super.paintComponent(grphcs);
     }
 
@@ -137,6 +121,6 @@ public class PanelCover extends javax.swing.JPanel {
         }
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify
+    // End of variables declaration
 }

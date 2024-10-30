@@ -1,8 +1,6 @@
 package dream_team.easy_travel.mainApp;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -19,10 +17,10 @@ import net.miginfocom.swing.MigLayout;
 
 public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     private boolean isPasswordVisible = false;
-    public PanelLoginAndRegister() {
+    public PanelLoginAndRegister(Easy_Travel app) {
         initComponents();
         initRegister();
-        initLogin();
+        initLogin(app);
         login.setVisible(false);
         register.setVisible(true);
     }
@@ -76,7 +74,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
     }
 
-    private void initLogin() {
+    private void initLogin(Easy_Travel app) {
         login.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
         JLabel label = new JLabel("Sign In");
         label.setFont(new Font("SansSerif", Font.BOLD, 30));
@@ -133,31 +131,79 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         login.add(cmd, "w 40%, h 40");
 
         cmd.addActionListener(e -> {
-            String username = txtEmail.getText();
-            String password = new String(txtPass.getPassword());
-            if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields");
-            } else {
-                try {
-                    ManageDatabase db = new ManageDatabase();
-                    User user = db.getUserByUsername(username);
-                    if (user != null && user.getPassword().equals(password)) {
-                        JOptionPane.showMessageDialog(null, "Login Successful");
-                        Easy_Travel app = new Easy_Travel();
-                        app.setLoggedInUser(user);
-                        app.showPanel("Home");
-                        app.updateFrameTitle("Home");
+            JDialog loadingDialog = createLoadingDialog(app);
+            SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() {
+                    String username = txtEmail.getText();
+                    String password = new String(txtPass.getPassword());
+                    if (username.isEmpty() || password.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Please fill in all fields");
                     } else {
-                        JOptionPane.showMessageDialog(null, "Invalid Username or Password");
+                        try {
+                            SwingUtilities.invokeLater(() -> loadingDialog.setVisible(true));
+                            ManageDatabase db = new ManageDatabase();
+                            User user = db.getUserByUsername(username);
+                            if (user != null && user.getPassword().equals(password)) {
+                                Thread.sleep(500);
+                                SwingUtilities.invokeLater(() -> {
+                                    loadingDialog.dispose();
+                                    app.setLoggedInUser(user);
+                                    app.showPanel("Home");
+                                    app.updateFrameTitle("Home");
+                                });
+                            } else {
+                                Thread.sleep(500);
+                                SwingUtilities.invokeLater(() -> {
+                                    loadingDialog.dispose();
+                                    JOptionPane.showMessageDialog(null, "Invalid Username or Password");
+                                });
+                            }
+                        } catch (Exception ex) {
+                            System.err.println(ex);
+                        } finally {
+                            SwingUtilities.invokeLater(() -> {
+                                try {
+                                    Thread.sleep(500);
+                                } catch (InterruptedException ex) {
+                                    ex.printStackTrace();
+                                }
+                                loadingDialog.dispose();
+                            });
+                        }
                     }
-                } catch (Exception ex) {
-                    System.err.println(ex);
+                    return null;
                 }
-            }
+            };
+            worker.execute();
         });
-}
+    }
 
-public void showRegister(boolean show) {
+    private JDialog createLoadingDialog(Easy_Travel app) {
+        JFrame parentFrame = app.getFrame();
+        JDialog loadingDialog = new JDialog(parentFrame, "Loading", true);
+        loadingDialog.setUndecorated(true);
+        loadingDialog.setLayout(new BorderLayout());
+        loadingDialog.setBackground(new Color(0, 0, 0, 0));
+
+        ImageIcon loadingIcon = new ImageIcon(
+                Objects.requireNonNull(getClass().getResource("/Loading.gif"), "Image not found: /Loading.gif")
+        );
+
+        JLabel loadingLabel = new JLabel(loadingIcon);
+        loadingLabel.setOpaque(false);
+
+        loadingDialog.setSize(loadingIcon.getIconWidth(), loadingIcon.getIconHeight());
+        loadingDialog.add(loadingLabel, BorderLayout.CENTER);
+        loadingDialog.setLocationRelativeTo(parentFrame);
+        loadingDialog.setAlwaysOnTop(true);
+
+        return loadingDialog;
+    }
+
+
+
+    public void showRegister(boolean show) {
         if (show) {
             register.setVisible(true);
             login.setVisible(false);
@@ -176,7 +222,7 @@ public void showRegister(boolean show) {
 
         setLayout(new java.awt.CardLayout());
 
-        login.setBackground(new java.awt.Color(255, 255, 255));
+       login = new GradientPanel(new Color(35, 163, 223), new Color(90, 236, 127));
 
         javax.swing.GroupLayout loginLayout = new javax.swing.GroupLayout(login);
         login.setLayout(loginLayout);
@@ -191,7 +237,7 @@ public void showRegister(boolean show) {
 
         add(login, "card3");
 
-        register.setBackground(new java.awt.Color(255, 255, 255));
+        register = new GradientPanel(new Color(35, 163, 223), new Color(90, 236, 127));
 
         javax.swing.GroupLayout registerLayout = new javax.swing.GroupLayout(register);
         register.setLayout(registerLayout);
@@ -206,6 +252,27 @@ public void showRegister(boolean show) {
 
         add(register, "card2");
     }// </editor-fold>//GEN-END:initComponents
+
+    public static class GradientPanel extends JPanel {
+        private final Color color1;
+        private final Color color2;
+
+        public GradientPanel(Color color1, Color color2) {
+            this.color1 = color1;
+            this.color2 = color2;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            int width = getWidth();
+            int height = getHeight();
+            GradientPaint gp = new GradientPaint(0, 0, color1, 0, height, color2);
+            g2d.setPaint(gp);
+            g2d.fillRect(0, 0, width, height);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel login;
