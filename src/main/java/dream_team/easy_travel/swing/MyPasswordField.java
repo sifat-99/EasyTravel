@@ -1,12 +1,6 @@
 package dream_team.easy_travel.swing;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.RenderingHints;
+import java.awt.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPasswordField;
@@ -47,7 +41,7 @@ public class MyPasswordField extends JPasswordField {
         setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10));
         setBackground(new Color(0, 0, 0, 0));
         setForeground(Color.decode("#7A8C8D"));
-        setFont(new java.awt.Font("sansserif", 0, 13));
+        setFont(new java.awt.Font("SansSerif", Font.PLAIN, 13));
         setSelectionColor(new Color(75, 175, 152));
     }
 
@@ -55,7 +49,8 @@ public class MyPasswordField extends JPasswordField {
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(new Color(230, 245, 241));
+//        g2.setColor(new Color(230, 245, 241));
+        g2.setColor(new Color(230, 245, 241, 0));
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), 5, 5);
         paintIcon(g);
         super.paintComponent(g);
@@ -70,6 +65,7 @@ public class MyPasswordField extends JPasswordField {
             Insets ins = getInsets();
             FontMetrics fm = g.getFontMetrics();
             g.setColor(new Color(200, 200, 200));
+//            g.setColor(new Color(200, 200, 200, 0));
             g.drawString(hint, ins.left, h / 2 + fm.getAscent() / 2 - 2);
         }
     }

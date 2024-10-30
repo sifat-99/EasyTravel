@@ -19,16 +19,16 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     private boolean isPasswordVisible = false;
     public PanelLoginAndRegister(Easy_Travel app) {
         initComponents();
-        initRegister();
+        initRegister(app);
         initLogin(app);
         login.setVisible(false);
         register.setVisible(true);
     }
 
-    private void initRegister() {
+    private void initRegister(Easy_Travel app) {
         register.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
         JLabel label = new JLabel("Create Account");
-        label.setFont(new Font("sansserif", Font.BOLD, 30));
+        label.setFont(new Font("SansSerif", Font.BOLD, 30));
         label.setForeground(new Color(0, 0, 0));
         register.add(label);
         MyTextField txtUser = new MyTextField();
@@ -65,6 +65,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 }
                 db.addNewUser(name, username, password);
                 JOptionPane.showMessageDialog(this, "User created successfully, Please login");
+                register.setVisible(false);
                 login.setVisible(true);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
@@ -123,6 +124,30 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         cmdForget.setContentAreaFilled(false);
         cmdForget.setCursor(new Cursor(Cursor.HAND_CURSOR));
         login.add(cmdForget);
+
+        cmdForget.addActionListener(e ->{
+            JDialog popupForgotDialogue = createPopupForgotDialogue(app);
+            SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() {
+                    try {
+                        SwingUtilities.invokeLater(() -> popupForgotDialogue.setVisible(true));
+//                        Thread.sleep(500);
+                        //                            JOptionPane.showMessageDialog(null, "Please contact the admin to reset your password");
+//                        SwingUtilities.invokeLater(popupForgotDialogue::dispose);
+                    } catch (Exception ex) {
+                        System.err.println(ex);
+                    } finally {
+                        SwingUtilities.invokeLater(() -> {
+                            //                                Thread.sleep(500);
+                            //                            popupForgotDialogue.dispose();
+                        });
+                    }
+                    return null;
+                }
+            };
+            worker.execute();
+        });
 
         Button cmd = new Button();
         cmd.setBackground(new Color(0, 0, 0));
@@ -200,6 +225,68 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
 
         return loadingDialog;
     }
+
+
+    private JDialog createPopupForgotDialogue(Easy_Travel app) {
+        JFrame parentFrame = app.getFrame();
+        JDialog popupForgotDialogue = new JDialog(parentFrame, "Forgot Password", true);
+        popupForgotDialogue.setUndecorated(true);
+        popupForgotDialogue.setLayout(new BorderLayout());
+        popupForgotDialogue.setBackground(Color.DARK_GRAY);
+
+        // Main panel to hold components
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBackground(Color.DARK_GRAY);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // Instruction label
+        JLabel instructionLabel = new JLabel("Please enter your email address:");
+        instructionLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        instructionLabel.setForeground(Color.WHITE);
+        instructionLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        mainPanel.add(instructionLabel);
+
+        // Spacing
+        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Email input field
+        JTextField emailField = new JTextField();
+        emailField.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        emailField.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+        emailField.setMaximumSize(new Dimension(250, 30));
+        mainPanel.add(emailField);
+
+        //ButtonPanel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(Color.DARK_GRAY);
+
+        // Reset button
+        JButton resetButton = new JButton("Reset");
+        resetButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        resetButton.addActionListener(e -> emailField.setText(""));
+        buttonPanel.add(resetButton);
+
+        // Close button
+        JButton closeButton = new JButton("Close");
+        closeButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        closeButton.addActionListener(e -> popupForgotDialogue.dispose());
+        buttonPanel.add(closeButton);
+
+        // Add main panel and button panel to dialog
+        popupForgotDialogue.add(mainPanel, BorderLayout.CENTER);
+        popupForgotDialogue.add(buttonPanel, BorderLayout.SOUTH);
+        popupForgotDialogue.setSize(350, 180);
+        popupForgotDialogue.setLocationRelativeTo(parentFrame);
+        popupForgotDialogue.setAlwaysOnTop(true);
+
+        return popupForgotDialogue;
+    }
+
 
 
 
