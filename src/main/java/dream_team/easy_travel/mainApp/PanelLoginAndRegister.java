@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.Objects;
 import javax.swing.*;
-
 import dream_team.easy_travel.DatabaseConnection.ManageDatabase;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;

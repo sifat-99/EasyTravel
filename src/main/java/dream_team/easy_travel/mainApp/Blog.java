@@ -46,7 +46,7 @@ public class Blog extends JPanel {
         cardPanel.setOpaque(false);
 
         // Load initial blog posts
-        loadBlogPosts();
+        loadBlogPosts(app);
 
 
         JScrollPane scrollPane = new JScrollPane(cardPanel);
@@ -61,11 +61,11 @@ public class Blog extends JPanel {
         add(layeredPane, BorderLayout.CENTER);
     }
 
-    public void loadBlogPosts() {
+    public void loadBlogPosts(Easy_Travel app) {
         blogPosts = fetchBlogPostsFromDatabase();
         cardPanel.removeAll();
         for (BlogPost post : blogPosts) {
-            JPanel card = createCard(post.getTitle(), post.getDescription(), post.getImage(), post.getId());
+            JPanel card = createCard(post.getTitle(), post.getDescription(), post.getImage(), post.getId(), app);
             cardPanel.add(card);
         }
         cardPanel.revalidate();
@@ -102,7 +102,7 @@ public class Blog extends JPanel {
         }
     }
 
-    private JPanel createCard(String title, String description, byte[] imageBytes, int blogId) {
+    private JPanel createCard(String title, String description, byte[] imageBytes, int blogId, Easy_Travel app) {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout());
         card.setOpaque(false);
@@ -127,7 +127,7 @@ public class Blog extends JPanel {
 
         JButton moreDetailsButton = new JButton("More Details");
         moreDetailsButton.addActionListener(e -> {
-            // app.showBlogPostDetails(blogId); // Implement this method to navigate to the details page
+            app.showPanelWithID("showBlogPostDetails", blogId);
         });
 
         card.add(imageLabel, BorderLayout.NORTH);
@@ -137,7 +137,7 @@ public class Blog extends JPanel {
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                // app.showBlogPostDetails(blogId); // Implement this method to navigate to the details page
+                app.showPanelWithID("showBlogPostDetails", blogId);
             }
         });
 

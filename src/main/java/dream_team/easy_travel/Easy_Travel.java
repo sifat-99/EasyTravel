@@ -40,7 +40,6 @@ public final class Easy_Travel {
     private final double addSize = 30;
     private final double coverSize = 40;
     private final double loginSize = 60;
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Easy_Travel::new);
     }
@@ -264,10 +263,20 @@ public final class Easy_Travel {
         }
     }
 
+    public void showPanelWithID(String panelName, int Id) {
+    contentPanel.add(new PlaceDetails(this,Id),"showBlogPostDetails");
+    CardLayout cl = (CardLayout) (contentPanel.getLayout());
+    cl.show(contentPanel, panelName);
+    if ("showBlogPostDetails".equals(panelName)) {
+
+        PlaceDetails placeDetails = (PlaceDetails) getPanel("showBlogPostDetails");
+    }
+}
+
     public void refreshBlogPanel() {
         Blog blogPanel = (Blog) getPanel("Blog");
         if (blogPanel != null) {
-            blogPanel.loadBlogPosts();
+            blogPanel.loadBlogPosts(Easy_Travel.this);
         }
     }
 
