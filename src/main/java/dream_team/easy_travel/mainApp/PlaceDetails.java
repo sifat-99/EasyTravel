@@ -11,12 +11,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class PlaceDetails extends JPanel {
-    private JLabel titleLabel, locationLabel, descriptionLabel;
     private JLabel imageLabel;
     private ImageIcon[] images;
     private int imageIndex = 0;
-    private Timer timer;
-    private JTextArea restaurantsArea;
 
     public PlaceDetails(Easy_Travel app, int id) {
         setLayout(null);
@@ -53,18 +50,18 @@ public class PlaceDetails extends JPanel {
         List<String> restaurants = new ArrayList<>();
         if (rs.next()) {
             // Set title
-            titleLabel = new JLabel(rs.getString("title"));
+            JLabel titleLabel = new JLabel(rs.getString("title"));
             titleLabel.setBounds(100, 50, 300, 30);
             titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
             add(titleLabel);
 
             // Set location
-            locationLabel = new JLabel("Location: " + rs.getString("location"));
+            JLabel locationLabel = new JLabel("Location: " + rs.getString("location"));
             locationLabel.setBounds(100, 90, 300, 20);
             add(locationLabel);
 
             // Set description
-            descriptionLabel = new JLabel("<html>" + rs.getString("description") + "</html>");
+            JLabel descriptionLabel = new JLabel("<html>" + rs.getString("description") + "</html>");
             descriptionLabel.setBounds(100, 120, 300, 100);
             add(descriptionLabel);
 
@@ -103,7 +100,7 @@ public class PlaceDetails extends JPanel {
 
         // Display restaurant details
         if (!restaurants.isEmpty()) {
-            restaurantsArea = new JTextArea();
+            JTextArea restaurantsArea = new JTextArea();
             restaurantsArea.setBounds(100, 400, 300, 100);
             restaurantsArea.setText(String.join("\n", restaurants));
             restaurantsArea.setEditable(false);
@@ -115,7 +112,7 @@ public class PlaceDetails extends JPanel {
 }
 
     private void startImageCarousel() {
-        timer = new Timer(2000, e -> {
+        Timer timer = new Timer(2000, e -> {
             imageIndex = (imageIndex + 1) % images.length;
             imageLabel.setIcon(images[imageIndex]);
         });
