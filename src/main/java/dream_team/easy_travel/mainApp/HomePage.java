@@ -1,76 +1,96 @@
 package dream_team.easy_travel.mainApp;
 
 import dream_team.easy_travel.Easy_Travel;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
+
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
 public class HomePage extends JPanel {
 
     public HomePage(Easy_Travel app) {
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setLayout(null); // Use null layout to allow precise positioning
+        setBackground(Color.BLACK); // Fallback color in case video fails to load
 
-        ImageIcon imageIcon = loadImageIcon();
-        if (imageIcon == null) {
-            throw new RuntimeException("Failed to load image: /HomeBG.png");
-        }
-        JLabel imageLabel = new JLabel(imageIcon);
-        add(imageLabel, BorderLayout.NORTH);
+        // Initialize JavaFX for video background
+        JFXPanel fxPanel = new JFXPanel();
+        fxPanel.setBounds(0, -100, 1400, 850);
+        add(fxPanel);
 
+        // Load and play the video as background
+        SwingUtilities.invokeLater(() -> initFX(fxPanel));
+
+        // Set up custom font, with fallback to Arial if needed
         Font lobsterFont = loadFont();
         if (lobsterFont == null) {
             lobsterFont = new Font("Arial", Font.BOLD, 60);
         }
 
+        // Add transparent overlay for contrast
+        JPanel overlayPanel = new JPanel();
+        overlayPanel.setBounds(1, 1, 1440, 750);
+        overlayPanel.setBackground(new Color(255, 255, 255, 0)); // Semi-transparent overlay
+        overlayPanel.setLayout(null);
+        fxPanel.add(overlayPanel);
+
+        // Welcome text label
         JLabel textLabel = new JLabel("Welcome", SwingConstants.LEFT);
         textLabel.setForeground(Color.BLACK);
         textLabel.setFont(lobsterFont.deriveFont(60f));
-        textLabel.setBounds(100, 200, 600, 50); // Set bounds for the textLabel
-        imageLabel.add(textLabel);
+        textLabel.setBounds(50, 200, 500, 60);
+        overlayPanel.add(textLabel);
 
-        // Split the text at \n to create multiple JLabels
+        // Add descriptive text labels
         String[] lines = {
                 "We help you to find wonderful trips and great vacation",
-                "Place and we will provide famous and popular tourist",
-                "Place all over the world"
+                "Places and we will provide famous and popular tourist",
+                "Places all over the world"
         };
 
-        int yOffset = 270;
+        int yOffset = 300;
         for (String line : lines) {
             JLabel textLabel2 = new JLabel(line, SwingConstants.LEFT);
             textLabel2.setForeground(Color.BLACK);
-            textLabel2.setFont(new Font("SansSerif", Font.ITALIC, 20));
-            textLabel2.setBounds(100, yOffset, 600, 30); // Set bounds for each textLabel
-            imageLabel.add(textLabel2);
+            textLabel2.setFont(new Font("SansSerif", Font.BOLD, 20));
+            textLabel2.setBounds(50, yOffset, 700, 30);
+            overlayPanel.add(textLabel2);
             yOffset += 30;
         }
 
-    CustomButton exploreButton = new CustomButton("Explore", 30);
-        exploreButton.setBounds(105, 385, 150, 50);
-        imageLabel.add(exploreButton);
+        // Explore button setup
+        CustomButton exploreButton = new CustomButton("Explore", 30);
+        exploreButton.setBounds(100, 410, 150, 50);
+        overlayPanel.add(exploreButton);
 
-        exploreButton.addActionListener(e -> {
-             app.showPanel("Blog");
-        });
-
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        add(centerPanel, BorderLayout.CENTER);
+        // Action listener for button
+        exploreButton.addActionListener(e -> app.showPanel("Blog"));
     }
 
-    private ImageIcon loadImageIcon() {
-        try {
-            ImageIcon icon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/HomeBG.png")));
-            Image image = icon.getImage().getScaledInstance(1200, 750, Image.SCALE_SMOOTH);
-            return new ImageIcon(image);
-        } catch (NullPointerException e) {
-            System.err.println("Resource not found: " + "/HomeBG.png");
-            return null;
-        }
+    // Initialize JavaFX video background
+    private void initFX(JFXPanel fxPanel) {
+        String videoPath = Objects.requireNonNull(getClass().getResource("/background.mp4")).toExternalForm();
+        Media media = new Media(videoPath);
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop the video
+
+        MediaView mediaView = new MediaView(mediaPlayer);
+        mediaView.setFitWidth(1400);
+        mediaView.setFitHeight(850);
+
+        Group root = new Group(mediaView);
+        Scene scene = new Scene(root, 1400, 850);
+        fxPanel.setScene(scene);
+        mediaPlayer.play();
     }
 
+    // Load custom font for labels
     public Font loadFont() {
         try (InputStream is = getClass().getResourceAsStream("/Lobster-Regular.ttf")) {
             assert is != null;
@@ -78,7 +98,7 @@ public class HomePage extends JPanel {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(font);
             return font;
-        } catch (FontFormatException | IOException | NullPointerException e) {
+        } catch (Exception e) {
             System.err.println("Failed to load font: " + "/Lobster-Regular.ttf");
             return null;
         }

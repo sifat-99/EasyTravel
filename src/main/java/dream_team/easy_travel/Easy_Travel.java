@@ -42,6 +42,7 @@ public final class Easy_Travel {
     private final double loginSize = 60;
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Easy_Travel::new);
+
     }
 
     public Easy_Travel() {
