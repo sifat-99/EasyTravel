@@ -1,5 +1,6 @@
 package dream_team.easy_travel;
 
+import dream_team.easy_travel.AdminPanel.Dashboard;
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.mainApp.*;
 
@@ -25,6 +26,7 @@ public final class Easy_Travel {
     private final JFrame frame;
     private final JPanel contentPanel;
     private JButton homeButton;
+
     private JButton blogButton, postButton;
     private JButton aboutButton;
     private JButton loginButton;
@@ -40,6 +42,8 @@ public final class Easy_Travel {
     private final double addSize = 30;
     private final double coverSize = 40;
     private final double loginSize = 60;
+    private JButton adminDashboardButton;
+    private JButton placeButton;
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Easy_Travel::new);
 
@@ -72,10 +76,12 @@ public final class Easy_Travel {
         contentPanel.add(new PostBlog(blogPosts, this), "Post"); // Updated constructor call
         contentPanel.add(new AboutUsPanel(this), "About");
         contentPanel.add(new Blog(blogPosts,this), "Blog");
-        contentPanel.add(new LoginPanel(this), "Login");
-        contentPanel.add(new SignUp(this), "SignUp");
+//        contentPanel.add(new LoginPanel(this), "Login");
+//        contentPanel.add(new SignUp(this), "SignUp");
         contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
         contentPanel.add(new LoginRunner(this), "LoginRunner");
+        contentPanel.add(new ChooseYourDesirePlace(blogPosts, this), "ChooseYourDesirePlace");
+        contentPanel.add(new Dashboard(this),"AdminDashboard");
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 800));
 
@@ -136,17 +142,23 @@ public final class Easy_Travel {
 
         // Create and style navigation buttons
         homeButton = createStyledButton("Home");
+        placeButton = createStyledButton("Places");
         blogButton = createStyledButton("Blog");
         postButton = createStyledButton("Post");
         aboutButton = createStyledButton("About");
+        adminDashboardButton = createStyledButton("Admin Dashboard");
         loginButton = createStyledButton("Login");
         logoutButton = createStyledButton("Logout");
 
         // Add buttons to nav panel
         navPanel.add(homeButton);
+        navPanel.add( placeButton);
         navPanel.add(blogButton);
         navPanel.add(postButton);
         navPanel.add(aboutButton);
+
+       navPanel.add(adminDashboardButton);
+
         navPanel.add(loginButton);
         navPanel.add(logoutButton);
 
@@ -159,6 +171,11 @@ public final class Easy_Travel {
             showPanel("Home");
             updateButtonColors(homeButton);
             updateFrameTitle("Home");
+        });
+        placeButton.addActionListener(e -> {
+            showPanel("ChooseYourDesirePlace");
+            updateButtonColors(placeButton);
+            updateFrameTitle("Place");
         });
         blogButton.addActionListener(e -> {
             showPanel("Blog");
@@ -183,8 +200,16 @@ public final class Easy_Travel {
         logoutButton.addActionListener(e -> {
             setLoggedInUser(null);
             showPanel("Home");
+            aboutButton.setVisible(true);
+            blogButton.setVisible(true);
+            postButton.setVisible(false);
             updateButtonColors(homeButton);
             updateFrameTitle("Home");
+        });
+        adminDashboardButton.addActionListener(e -> {
+            showPanel("AdminDashboard");
+            updateButtonColors(adminDashboardButton);
+            updateFrameTitle("Admin Dashboard");
         });
 
         return menuBar;
@@ -197,18 +222,30 @@ public final class Easy_Travel {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Set background color
                 g2.setColor(Color.decode("#46BBF7"));
+
+                // Get panel dimensions
                 int width = getWidth();
                 int height = getHeight();
-                int arcSize = 40;
+                int arcSize = 40; // Arc for rounded corners
+
+                // Draw rounded left side and straight right side
                 g2.fillRoundRect(0, 0, arcSize, height, arcSize, arcSize);
                 g2.fillRect(arcSize / 2, 0, width - arcSize / 2, height);
             }
         };
+
+        // Set panel properties
         navPanel.setOpaque(false);
-        navPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        navPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 15)); // Centered with padding
+
+
+
         return navPanel;
     }
+
     private static JPanel getLogoPanel() {
         JPanel logoPanel = new JPanel(new GridBagLayout()) {
             @Override
@@ -239,13 +276,14 @@ public final class Easy_Travel {
         return logoPanel;
     }
 
+
     private JButton createStyledButton(String text) {
         Font lobsterFont = loadFont();
         if (lobsterFont == null) {
             lobsterFont = new Font("SansSerif", Font.ITALIC, 16);
         }
+
         JButton button = new JButton(text);
-        button.setPreferredSize(new Dimension(100, 40));
         button.setFocusPainted(false);
         button.setFont(lobsterFont);
         button.setBackground(Color.WHITE);
@@ -253,8 +291,16 @@ public final class Easy_Travel {
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         button.setContentAreaFilled(false);
         button.setOpaque(false);
+
+        // Calculate the button width based on text length
+        FontMetrics fm = button.getFontMetrics(lobsterFont);
+        int textWidth = fm.stringWidth(text) + 50; // Additional padding
+
+        button.setPreferredSize(new Dimension(textWidth, 40));
+
         return button;
     }
+
 
     public void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (contentPanel.getLayout());
@@ -291,7 +337,7 @@ public final class Easy_Travel {
     }
 
     private void updateButtonColors(JButton activeButton) {
-        JButton[] buttons = {homeButton, blogButton, postButton, aboutButton, loginButton, logoutButton};
+        JButton[] buttons = {homeButton, blogButton, postButton, aboutButton, loginButton, logoutButton, placeButton, adminDashboardButton};
         for (JButton button : buttons) {
             if (button == activeButton) {
                 button.setForeground(Color.BLUE);
@@ -323,10 +369,19 @@ public final class Easy_Travel {
         if (loggedInUser == null) {
             loginButton.setVisible(true);
             logoutButton.setVisible(false);
+            postButton.setVisible(false);
+            adminDashboardButton.setVisible(false);
         } else {
             loginButton.setVisible(false);
             logoutButton.setVisible(true);
+            if(Objects.equals(loggedInUser.getUsername(), "admin")){
+                adminDashboardButton.setVisible(true);
+                aboutButton.setVisible(false);
+                blogButton.setVisible(false);
+                postButton.setVisible(true);
+            }
         }
+
     }
 
     private void adjustMenuItems() {
@@ -334,14 +389,22 @@ public final class Easy_Travel {
 
         homeButton.setVisible(true);
         blogButton.setVisible(true);
-        postButton.setVisible(true);
+        postButton.setVisible(false);
         aboutButton.setVisible(true);
         if (loggedInUser == null) {
             loginButton.setVisible(true);
             logoutButton.setVisible(false);
+            postButton.setVisible(false);
+            adminDashboardButton.setVisible(false);
         } else {
             loginButton.setVisible(false);
             logoutButton.setVisible(true);
+            if(Objects.equals(loggedInUser.getUsername(), "admin")){
+                adminDashboardButton.setVisible(true);
+                aboutButton.setVisible(false);
+                blogButton.setVisible(false);
+                postButton.setVisible(true);
+            }
         }
     }
 

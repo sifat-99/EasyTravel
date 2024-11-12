@@ -12,6 +12,7 @@ import dream_team.easy_travel.swing.Button;
 import dream_team.easy_travel.swing.MyPasswordField;
 import dream_team.easy_travel.swing.MyTextField;
 import net.miginfocom.swing.MigLayout;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
@@ -52,6 +53,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             String name = txtUser.getText();
             String username = txtEmail.getText();
             String password = new String(txtPass.getPassword());
+            String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields");
                 return;
@@ -62,7 +64,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                     JOptionPane.showMessageDialog(this, "Username already exists");
                     return;
                 }
-                db.addNewUser(name, username, password);
+                db.addNewUser(name, username, encryptedPassword);
                 JOptionPane.showMessageDialog(this, "User created successfully, Please login");
                 register.setVisible(false);
                 login.setVisible(true);
@@ -168,7 +170,8 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                             SwingUtilities.invokeLater(() -> loadingDialog.setVisible(true));
                             ManageDatabase db = new ManageDatabase();
                             User user = db.getUserByUsername(username);
-                            if (user != null && user.getPassword().equals(password)) {
+
+                            if ( BCrypt.checkpw(password, user.getPassword())) {
                                 Thread.sleep(500);
                                 SwingUtilities.invokeLater(() -> {
                                     loadingDialog.dispose();
