@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//
+
 public class PostBlog extends JPanel {
     private final JTextField titleField;
     private final JTextField locationField;
