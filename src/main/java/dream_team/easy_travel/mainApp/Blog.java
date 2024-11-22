@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 
 public class Blog extends JPanel {
@@ -41,7 +44,7 @@ public class Blog extends JPanel {
 
         ImageIcon imageIcon = loadImageIcon();
         if (imageIcon == null) {
-            throw new RuntimeException("Failed to load image: /HomeBG.png");
+            throw new RuntimeException("Failed to load image: /BlogBG.jpg");
         }
 
         JLabel imageLabel = new JLabel(imageIcon);
@@ -196,13 +199,17 @@ public class Blog extends JPanel {
         card.setBorder(new TitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.BOLD, 18)));
         card.setOpaque(false);
 
-        JTextArea descriptionLabel = new JTextArea(description);
+        JTextPane descriptionLabel = new JTextPane();
+        descriptionLabel.setText(description);
         descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         descriptionLabel.setForeground(Color.WHITE);
-        descriptionLabel.setLineWrap(true);
-        descriptionLabel.setWrapStyleWord(true);
-        descriptionLabel.setOpaque(false);
         descriptionLabel.setEditable(false);
+        descriptionLabel.setOpaque(false);
+        // Justify text
+        StyledDocument doc = descriptionLabel.getStyledDocument();
+        SimpleAttributeSet justify = new SimpleAttributeSet();
+        StyleConstants.setAlignment(justify, StyleConstants.ALIGN_LEFT);
+        doc.setParagraphAttributes(0, doc.getLength(), justify, false);
         descriptionLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the description
 
         JScrollPane scrollPane = new JScrollPane(descriptionLabel);

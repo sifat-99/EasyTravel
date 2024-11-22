@@ -1,9 +1,7 @@
 package dream_team.easy_travel;
-
 import dream_team.easy_travel.AdminPanel.Dashboard;
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.mainApp.*;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
@@ -78,13 +76,12 @@ public final class Easy_Travel {
         contentPanel.add(new Blog(blogPosts,this), "Blog");
 //        contentPanel.add(new LoginPanel(this), "Login");
 //        contentPanel.add(new SignUp(this), "SignUp");
-        contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
+//        contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
         contentPanel.add(new LoginRunner(this), "LoginRunner");
-        contentPanel.add(new ChooseYourDesirePlace(blogPosts, this), "ChooseYourDesirePlace");
+        contentPanel.add(new ChooseYourDesirePlace( this), "ChooseYourDesirePlace");
         contentPanel.add(new Dashboard(this),"AdminDashboard");
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 800));
-
         // Add the contentPanel to the default layer
         contentPanel.setBounds(0, 0, 1200, 800);
         layeredPane.add(contentPanel, JLayeredPane.DEFAULT_LAYER);

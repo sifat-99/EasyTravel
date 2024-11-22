@@ -1,5 +1,7 @@
 package dream_team.easy_travel.mainApp;
 import dream_team.easy_travel.Easy_Travel;
+import dream_team.easy_travel.swing.Button;
+
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -77,8 +79,9 @@ add(developersLabel);
 
 
 
-        CustomButton backButton = new CustomButton("Back", 10);
-        backButton.setBounds(100, 600, 100, 30);
+        JButton backButton = new Button();
+        backButton.setText("Back to Homepage");
+        backButton.setBounds(100, 600, 200, 30);
         backButton.addActionListener(e -> app.showPanel("Home"));
         add(backButton);
     }

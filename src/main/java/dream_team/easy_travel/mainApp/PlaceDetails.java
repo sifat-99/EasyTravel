@@ -1,9 +1,7 @@
 package dream_team.easy_travel.mainApp;
-
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;
-
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -23,7 +21,8 @@ public class PlaceDetails extends JPanel {
     public PlaceDetails(Easy_Travel app, int id) {
         // Set layout and background
         setLayout(null);
-        setBackground(new Color(240, 248, 255)); // Light blue background for a clean design
+        setOpaque(false);
+//        setBackground(new Color(240, 248, 255)); // Light blue background for a clean design
 
         // Fetch and display blog details
         fetchBlogDetails(id);
@@ -79,7 +78,8 @@ public class PlaceDetails extends JPanel {
                 descriptionArea.setBounds(50, 90, 400, 250);
                 descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
                 descriptionArea.setEditable(false);
-                descriptionArea.setBackground(new Color(240, 248, 255));
+//                descriptionArea.setBackground(new Color(240, 248, 255));
+                descriptionArea.setOpaque(false);
                 // Justify text
                 StyledDocument doc = descriptionArea.getStyledDocument();
                 SimpleAttributeSet justify = new SimpleAttributeSet();
@@ -129,12 +129,14 @@ public class PlaceDetails extends JPanel {
                     JPanel accordionPanel = new JPanel();
                     accordionPanel.setBounds(510, 20, 650, 350);
                     accordionPanel.setLayout(new BoxLayout(accordionPanel, BoxLayout.Y_AXIS));
-                    accordionPanel.setBackground(new Color(240, 248, 255)); // Match panel background
+//                    accordionPanel.setBackground(new Color(240, 248, 255)); // Match panel background
+                    accordionPanel.setOpaque(false);
 
 
                     for (String restaurantDetails : restaurants) {
                         JPanel restaurantPanel = new JPanel(new BorderLayout());
                         restaurantPanel.setBackground(new Color(240, 255, 255)); // Light cyan
+                        restaurantPanel.setOpaque(false);
                         restaurantPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
                         restaurantPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -144,7 +146,8 @@ public class PlaceDetails extends JPanel {
                         detailsArea.setLineWrap(true);
                         detailsArea.setWrapStyleWord(true);
                         detailsArea.setEditable(false);
-                        detailsArea.setBackground(new Color(240, 255, 255)); // Match panel background
+                        detailsArea.setOpaque(false);
+//                        detailsArea.setBackground(new Color(240, 255, 255)); // Match panel background
 
                         // Booking button
                         JButton bookButton = new Button();
@@ -169,6 +172,7 @@ public class PlaceDetails extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
 
@@ -193,5 +197,17 @@ public class PlaceDetails extends JPanel {
             this.rating = rating;
             this.price = price;
         }
+    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        int width = getWidth();
+        int height = getHeight();
+        Color color1 = new Color(255, 255, 255); // Light blue
+        Color color2 = new Color(173, 216, 230); // Soft blue
+        GradientPaint gp = new GradientPaint(0, 0, color1, 0, height, color2);
+        g2d.setPaint(gp);
+        g2d.fillRect(0, 0, width, height);
     }
 }

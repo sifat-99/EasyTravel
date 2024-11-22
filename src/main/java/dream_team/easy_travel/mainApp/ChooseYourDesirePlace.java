@@ -3,275 +3,199 @@ package dream_team.easy_travel.mainApp;
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
+import javax.swing.event.CellEditorListener;
+import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.swing.plaf.basic.BasicScrollBarUI;
-
+import java.util.EventObject;
 
 public class ChooseYourDesirePlace extends JPanel {
-    private List<BlogPost> blogPosts;
-    private final JPanel cardPanel;
-    public Easy_Travel app;
-    private final JTextField searchField;
+    private JPanel placesPanel;
+    private JTextField searchField;
 
-    public ChooseYourDesirePlace(List<BlogPost> blogPosts, Easy_Travel app) {
-        this.blogPosts = blogPosts;
+    public ChooseYourDesirePlace(Easy_Travel app) {
         setLayout(new BorderLayout());
-        setBackground(Color.BLUE);
-        this.app = app;
+        initializeComponents();
+        fetchPlacesWithRestaurants("");  // Initially fetch all places
+    }
 
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(1200, 750));
-
-        ImageIcon imageIcon = loadImageIcon();
-        if (imageIcon == null) {
-            throw new RuntimeException("Failed to load image: /HomeBG.png");
-        }
-
-        JLabel imageLabel = new JLabel(imageIcon);
-        imageLabel.setBounds(0, 0, 1200, 750);
-        layeredPane.add(imageLabel, Integer.valueOf(0));
-
-        cardPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        cardPanel.setBounds(200, 70, 400, 400);
-        cardPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel("Blog Posts");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(Color.WHITE);
-        layeredPane.add(titleLabel, Integer.valueOf(1));
-        titleLabel.setBounds(530, 10, 200, 50);
-
-
-        // Search bar panel
+    private void initializeComponents() {
+        // Search Panel
         JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new BorderLayout());
-        searchPanel.setOpaque(false);
-        searchPanel.setPreferredSize(new Dimension(800, 50));
-
-        searchField = new JTextField("Search");
-        searchField.setPreferredSize(new Dimension(700, 40));
-        searchPanel.add(searchField, BorderLayout.CENTER);
-
-        JButton searchButton = new JButton("🔍");
-        searchButton.addActionListener(new ActionListener() {
+        searchPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        searchField = new JTextField(20);
+        searchField.setText("Search...");
+        searchField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                searchBlogPosts(searchField.getText().trim());
+                // Trigger search when Enter is pressed
+                fetchPlacesWithRestaurants(searchField.getText().trim());
             }
         });
-        searchPanel.add(searchButton, BorderLayout.EAST);
+        searchPanel.add(searchField);
 
-        layeredPane.add(searchPanel, Integer.valueOf(2));
-        searchPanel.setBounds(200, 50, 800, 50);
+        // Adding search panel at the top
+        add(searchPanel, BorderLayout.NORTH);
 
-        // Load initial blog posts
-        loadBlogPosts(app);
-
-        JScrollPane scrollPane = new JScrollPane(cardPanel);
-        scrollPane.setBounds(200, 110, 800, 600);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-        // Custom scrollbar colors for main scrollPane
-        scrollPane.getVerticalScrollBar().setUI(createCustomScrollBarUI());
-        scrollPane.getHorizontalScrollBar().setUI(createCustomScrollBarUI());
-
-        layeredPane.add(scrollPane, Integer.valueOf(20));
-
-        add(layeredPane, BorderLayout.CENTER);
+        // Panel to hold places and restaurants
+        placesPanel = new JPanel();
+        placesPanel.setLayout(new BoxLayout(placesPanel, BoxLayout.Y_AXIS));
+        JScrollPane scrollPane = new JScrollPane(placesPanel);
+        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI());
+        add(scrollPane, BorderLayout.CENTER);
     }
 
-    private BasicScrollBarUI createCustomScrollBarUI() {
-        return new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(169, 169, 169); // Color of the scrollbar thumb
-                this.trackColor = new Color(60, 63, 65); // Color of the scrollbar track (matches background)
-            }
+    private void fetchPlacesWithRestaurants(String searchTerm) {
+        String query = """
+                SELECT id AS place_id, 
+                       title, 
+                       restaurant_1, price_1, 
+                       restaurant_2, price_2, 
+                       restaurant_3, price_3, 
+                       restaurant_4, price_4 
+                FROM restaurants
+                WHERE title LIKE ? OR restaurant_1 LIKE ? OR restaurant_2 LIKE ? OR restaurant_3 LIKE ? OR restaurant_4 LIKE ?
+                """;
 
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-        };
-    }
-
-    public void loadBlogPosts(Easy_Travel app) {
-        blogPosts = fetchBlogPostsFromDatabase();
-        displayBlogPosts(blogPosts);
-    }
-
-    private List<BlogPost> fetchBlogPostsFromDatabase() {
-        List<BlogPost> posts = new ArrayList<>();
-        String query = "SELECT id, title, description, image1 FROM blog_posts";
         try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("title");
-                String description = rs.getString("description");
-                byte[] image = rs.getBytes("image1");
-                posts.add(new BlogPost(id, title, description, image));
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            // Setting the search term for each relevant column
+            String searchPattern = "%" + searchTerm + "%";
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+            ps.setString(4, searchPattern);
+            ps.setString(5, searchPattern);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                placesPanel.removeAll(); // Clear existing data before displaying new search results
+
+                while (rs.next()) {
+                    int placeId = rs.getInt("place_id");
+                    String placeName = rs.getString("title");
+
+                    // Create a panel for each place
+                    JPanel placePanel = new JPanel();
+                    placePanel.setLayout(new BoxLayout(placePanel, BoxLayout.Y_AXIS));
+                    placePanel.setBorder(BorderFactory.createTitledBorder(
+                            BorderFactory.createLineBorder(Color.BLACK),
+                            "Place ID: " + placeId + " - " + placeName
+                    ));
+
+                    // Add a table for restaurants within the place panel
+                    DefaultTableModel tableModel = new DefaultTableModel(new String[]{
+                            "Restaurant", "Price", "Action"
+                    }, 0) {
+                        @Override
+                        public boolean isCellEditable(int row, int column) {
+                            return column == 2; // Only the "Action" column is editable for buttons
+                        }
+                    };
+
+                    JTable restaurantTable = new JTable(tableModel);
+                    restaurantTable.setRowHeight(30);
+
+                    // Custom renderer for the "Action" column - adding a button
+                    restaurantTable.getColumn("Action").setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
+                        JButton button = new JButton("Book");
+                        button.addActionListener(e -> handleBooking(row, placeName));  // pass the row index and place name
+                        return button;
+                    });
+
+                    // Custom editor for the "Action" column - make the button interactive
+                    restaurantTable.getColumn("Action").setCellEditor(new TableCellEditor() {
+                        @Override
+                        public Object getCellEditorValue() {
+                            return null;  // No actual value to store since we're using a button
+                        }
+
+                        @Override
+                        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                            JButton button = new JButton("Book");
+                            button.addActionListener(e -> handleBooking(row, placeName));  // Trigger booking on click
+                            return button;
+                        }
+
+                        @Override
+                        public boolean isCellEditable(EventObject anEvent) {
+                            return true;  // Allow editing (button click)
+                        }
+
+                        @Override
+                        public boolean shouldSelectCell(EventObject anEvent) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean stopCellEditing() {
+                            return false;
+                        }
+
+                        @Override
+                        public void cancelCellEditing() {
+
+                        }
+
+                        @Override
+                        public void addCellEditorListener(CellEditorListener l) {
+
+                        }
+
+                        @Override
+                        public void removeCellEditorListener(CellEditorListener l) {
+
+                        }
+                    });
+
+                    for (int i = 1; i <= 4; i++) {
+                        String restaurantColumn = "restaurant_" + i;
+                        String priceColumn = "price_" + i;
+
+                        String restaurantName = rs.getString(restaurantColumn);
+                        Double price = rs.getDouble(priceColumn);
+
+                        if (restaurantName != null && !restaurantName.trim().isEmpty()) {
+                            tableModel.addRow(new Object[]{restaurantName, price, "Book"});
+                        }
+                    }
+
+                    // Add the restaurant table to the place panel
+                    JScrollPane tableScrollPane = new JScrollPane(restaurantTable);
+                    placePanel.add(tableScrollPane);
+                    placesPanel.add(placePanel);
+                }
+
+                placesPanel.revalidate();
+                placesPanel.repaint();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        return posts;
-    }
-
-    private void displayBlogPosts(List<BlogPost> posts) {
-        cardPanel.removeAll();
-        for (BlogPost post : posts) {
-            JPanel card = createCard(post.getTitle(), post.getDescription(), post.getImage(), post.getId(), app);
-            cardPanel.add(card);
-        }
-        cardPanel.revalidate();
-        cardPanel.repaint();
-    }
-
-    private void searchBlogPosts(String query) {
-        if (query.isEmpty()) {
-            displayBlogPosts(blogPosts); // Show all posts if the query is empty
-            return;
-        }
-        List<BlogPost> filteredPosts = new ArrayList<>();
-        for (BlogPost post : blogPosts) {
-            if (post.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    post.getDescription().toLowerCase().contains(query.toLowerCase())) {
-                filteredPosts.add(post);
-            }
-        }
-        displayBlogPosts(filteredPosts); // Show filtered posts
-    }
-
-    private ImageIcon loadImageIcon() {
-        try {
-            ImageIcon icon = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("/BlogBG.jpg")));
-            Image image = icon.getImage().getScaledInstance(1200, 750, Image.SCALE_SMOOTH);
-            return new ImageIcon(image);
-        } catch (NullPointerException e) {
-            System.err.println("Resource not found: " + "/HomeBG.png");
-            return null;
+            JOptionPane.showMessageDialog(this, "Failed to fetch place and restaurant data.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private JPanel createCard(String title, String description, byte[] image, int id, Easy_Travel app) {
-        JPanel card = new JPanel();
-        card.setLayout(new BorderLayout());
-        card.setPreferredSize(new Dimension(500, 250));
+    private void handleBooking(int row, String placeName) {
+        // Get the table from the correct container
+        JPanel scrollPane = (JPanel) placesPanel.getComponent(0);
+        JTable table = (JTable) ((JScrollPane) scrollPane.getComponent(0)).getViewport().getView();
 
-        card.setBorder(new TitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.BOLD, 18)));
-        card.setOpaque(false);
+        // Get the restaurant name from the clicked row (column 0 is the restaurant name)
+        String restaurantName = (String) table.getValueAt(row, 0);
+        String restaurantPrice = table.getValueAt(row, 1).toString();
 
-        JTextArea descriptionLabel = new JTextArea(description);
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        descriptionLabel.setForeground(Color.WHITE);
-        descriptionLabel.setLineWrap(true);
-        descriptionLabel.setWrapStyleWord(true);
-        descriptionLabel.setOpaque(false);
-        descriptionLabel.setEditable(false);
-        descriptionLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the description
+        new PaymentModal(placeName, restaurantName,restaurantPrice).setVisible(true);
 
-        JScrollPane scrollPane = new JScrollPane(descriptionLabel);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(null);
-
-        // Custom scrollbar colors
-        scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(169, 169, 169); // Color of the scrollbar thumb
-                this.trackColor = new Color(60, 63, 65); // Color of the scrollbar track (matches background)
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-        });
-
-        card.add(scrollPane, BorderLayout.CENTER);
-
-        JLabel imageLabel = new JLabel();
-        imageLabel.setPreferredSize(new Dimension(250, 150));
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageLabel.setVerticalAlignment(SwingConstants.CENTER);
-        imageLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                app.showPanelWithID("showBlogPostDetails", id);
-            }
-        });
-
-        if (image != null) {
-            try {
-                BufferedImage img = ImageIO.read(new ByteArrayInputStream(image));
-                Image scaledImage = img.getScaledInstance(250, 150, Image.SCALE_SMOOTH);
-                imageLabel.setIcon(new ImageIcon(scaledImage));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        card.add(imageLabel, BorderLayout.WEST);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10)); // Center-align the button with some top padding
-        buttonPanel.setOpaque(false);
-        JButton viewButton = new JButton("View");
-        viewButton.setPreferredSize(new Dimension(80, 25)); // Make button smaller
-        viewButton.addActionListener(e -> app.showPanelWithID("showBlogPostDetails", id));
-        buttonPanel.add(viewButton);
-
-        card.add(buttonPanel, BorderLayout.SOUTH);
-
-        return card;
     }
+
+
 
 }
