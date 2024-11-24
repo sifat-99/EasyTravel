@@ -66,10 +66,11 @@ Easy Travel is a Java-based application designed to help users explore and book 
 4. Push to the branch (`git push origin feature-branch`).
 5. Create a new Pull Request.
 
-## License
+[//]: # (## License)
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+[//]: # ()
+[//]: # (This project is licensed under the MIT License. See the `LICENSE` file for details.)
 
 ## Contact
 
-For any inquiries or issues, please contact [your-email@example.com].
+For any inquiries or issues, please contact [mdabdurrahmansifat@gmail.com].
