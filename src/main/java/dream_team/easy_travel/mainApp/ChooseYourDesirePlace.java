@@ -18,20 +18,42 @@ import java.sql.SQLException;
 import java.util.EventObject;
 
 public class ChooseYourDesirePlace extends JPanel {
+    public Easy_Travel app;
     private JPanel placesPanel;
     private JTextField searchField;
 
     public ChooseYourDesirePlace(Easy_Travel app) {
         setLayout(new BorderLayout());
         initializeComponents();
+        this.app = app;
         fetchPlacesWithRestaurants("");  // Initially fetch all places
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+
+        // Define the gradient colors
+        Color startColor = new Color(135, 206, 250); // Light Sky Blue
+        Color endColor = new Color(70, 130, 180); // Steel Blue
+
+        // Create a gradient from top to bottom
+        int width = getWidth();
+        int height = getHeight();
+        GradientPaint gradient = new GradientPaint(0, 0, startColor, 0, height, endColor);
+
+        // Fill the background with the gradient
+        g2d.setPaint(gradient);
+        g2d.fillRect(0, 0, width, height);
     }
 
     private void initializeComponents() {
         // Search Panel
         JPanel searchPanel = new JPanel();
+        searchPanel.setOpaque(false); // Make the search panel background transparent
         searchPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        searchField = new JTextField(20);
+        searchField = new JTextField(30);
         searchField.setText("Search...");
         searchField.addActionListener(new ActionListener() {
             @Override
@@ -48,7 +70,11 @@ public class ChooseYourDesirePlace extends JPanel {
         // Panel to hold places and restaurants
         placesPanel = new JPanel();
         placesPanel.setLayout(new BoxLayout(placesPanel, BoxLayout.Y_AXIS));
+        placesPanel.setBackground(new Color(255, 255, 255, 0)); // Transparent background
+        placesPanel.setOpaque(true); // Make the places panel background transparent
         JScrollPane scrollPane = new JScrollPane(placesPanel);
+        scrollPane.getViewport().setBackground(new Color(255, 255, 255, 0)); // Transparent background
+        scrollPane.setOpaque(true);
         scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI());
         add(scrollPane, BorderLayout.CENTER);
     }
@@ -85,11 +111,16 @@ public class ChooseYourDesirePlace extends JPanel {
 
                     // Create a panel for each place
                     JPanel placePanel = new JPanel();
+                    placePanel.setOpaque(false); // Transparent background
                     placePanel.setLayout(new BoxLayout(placePanel, BoxLayout.Y_AXIS));
+
                     placePanel.setBorder(BorderFactory.createTitledBorder(
                             BorderFactory.createLineBorder(Color.BLACK),
                             "Place ID: " + placeId + " - " + placeName
                     ));
+
+                    placePanel.setPreferredSize(new Dimension(placesPanel.getWidth(), 200));
+                    placePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
 
                     // Add a table for restaurants within the place panel
                     DefaultTableModel tableModel = new DefaultTableModel(new String[]{
@@ -102,6 +133,7 @@ public class ChooseYourDesirePlace extends JPanel {
                     };
 
                     JTable restaurantTable = new JTable(tableModel);
+
                     restaurantTable.setRowHeight(30);
 
                     // Custom renderer for the "Action" column - adding a button
@@ -161,7 +193,7 @@ public class ChooseYourDesirePlace extends JPanel {
                         String priceColumn = "price_" + i;
 
                         String restaurantName = rs.getString(restaurantColumn);
-                        Double price = rs.getDouble(priceColumn);
+                        double price = rs.getDouble(priceColumn);
 
                         if (restaurantName != null && !restaurantName.trim().isEmpty()) {
                             tableModel.addRow(new Object[]{restaurantName, price, "Book"});
@@ -192,10 +224,7 @@ public class ChooseYourDesirePlace extends JPanel {
         String restaurantName = (String) table.getValueAt(row, 0);
         String restaurantPrice = table.getValueAt(row, 1).toString();
 
-        new PaymentModal(placeName, restaurantName,restaurantPrice).setVisible(true);
+        new PaymentModal(placeName, restaurantName, restaurantPrice,app).setVisible(true);
 
     }
-
-
-
 }

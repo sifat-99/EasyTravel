@@ -53,6 +53,7 @@ public final class Easy_Travel {
         frame.setSize(1200, 800);
         frame.setBackground(Color.WHITE);
         frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
         ImageIcon Logo = new ImageIcon(Objects.requireNonNull(getClass().getResource("/logo.png")));
         frame.setIconImage(Logo.getImage());
 
@@ -74,9 +75,6 @@ public final class Easy_Travel {
         contentPanel.add(new PostBlog(blogPosts, this), "Post"); // Updated constructor call
         contentPanel.add(new AboutUsPanel(this), "About");
         contentPanel.add(new Blog(blogPosts,this), "Blog");
-//        contentPanel.add(new LoginPanel(this), "Login");
-//        contentPanel.add(new SignUp(this), "SignUp");
-//        contentPanel.add(new showBlogPostDetails(1,this), "showBlogPostDetails");
         contentPanel.add(new LoginRunner(this), "LoginRunner");
         contentPanel.add(new ChooseYourDesirePlace( this), "ChooseYourDesirePlace");
         contentPanel.add(new Dashboard(this),"AdminDashboard");
