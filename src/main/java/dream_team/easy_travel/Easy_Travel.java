@@ -77,7 +77,11 @@ public final class Easy_Travel {
         contentPanel.add(new Blog(blogPosts,this), "Blog");
         contentPanel.add(new LoginRunner(this), "LoginRunner");
         contentPanel.add(new ChooseYourDesirePlace( this), "ChooseYourDesirePlace");
-        contentPanel.add(new Dashboard(this),"AdminDashboard");
+        try {
+            contentPanel.add(new Dashboard(this),"AdminDashboard");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 800));
         // Add the contentPanel to the default layer
