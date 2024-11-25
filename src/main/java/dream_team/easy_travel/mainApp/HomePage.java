@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 public class HomePage extends JPanel {
-
+//Changed
     public HomePage(Easy_Travel app) {
         setLayout(null); // Use null layout to allow precise positioning
         setBackground(Color.BLACK); // Fallback color in case video fails to load
