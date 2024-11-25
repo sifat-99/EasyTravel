@@ -36,40 +36,6 @@ Easy Travel is a Java-based application designed to help users explore and book 
     - Create a MySQL database and import the provided SQL schema.
     - Update the database connection details in `ConnectDB.java`.
 
-3. **Install dependencies**:
-    ```sh
-    mvn clean install
-    ```
-
-4. **Run the application**:
-    ```sh
-    mvn javafx:run
-    ```
-
-## Project Structure
-
-- `src/main/java/dream_team/easy_travel`: Main application code.
-- `src/main/java/dream_team/easy_travel/AdminPanel`: Admin dashboard components.
-- `src/main/java/dream_team/easy_travel/DatabaseConnection`: Database connection utilities.
-- `src/main/resources`: Resource files such as images and fonts.
-
-## Usage
-
-- **User Interface**: The main interface allows users to browse travel destinations and view details.
-- **Admin Dashboard**: Accessible to admin users for managing bookings and user data.
-
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Create a new Pull Request.
-
-[//]: # (## License)
-
-[//]: # ()
-[//]: # (This project is licensed under the MIT License. See the `LICENSE` file for details.)
 
 # Database Schema Documentation
 
@@ -160,7 +126,7 @@ This table stores information about restaurants near blog post locations.
 ---
 
 ### 4. `Users`
-    
+
 ```sql
 CREATE TABLE Users (
     id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -191,6 +157,32 @@ This table stores information about registered users.
 - The `password` column in the `Users` table should store passwords in an encrypted form for security.
 - Consider optimizing image storage in the `blog_posts` table if the database grows significantly.
 - Maintain referential integrity for all foreign key relationships to ensure data consistency.
+
+
+## Project Structure
+
+- `src/main/java/dream_team/easy_travel`: Main application code.
+- `src/main/java/dream_team/easy_travel/AdminPanel`: Admin dashboard components.
+- `src/main/java/dream_team/easy_travel/DatabaseConnection`: Database connection utilities.
+- `src/main/resources`: Resource files such as images and fonts.
+
+## Usage
+
+- **User Interface**: The main interface allows users to browse travel destinations and view details.
+- **Admin Dashboard**: Accessible to admin users for managing bookings and user data.
+
+## Contributing
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature-branch`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature-branch`).
+5. Create a new Pull Request.
+
+[//]: # (## License)
+
+[//]: # ()
+[//]: # (This project is licensed under the MIT License. See the `LICENSE` file for details.)
 
 
 ## Contact
