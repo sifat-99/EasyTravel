@@ -214,7 +214,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
         loadingDialog.setBackground(new Color(0, 0, 0, 0));
 
         ImageIcon loadingIcon = new ImageIcon(
-                Objects.requireNonNull(getClass().getResource("/Loading.gif"), "Image not found: /Loading.gif")
+                Objects.requireNonNull(getClass().getResource("/loader.gif"), "Image not found: /Loading.gif")
         );
 
         JLabel loadingLabel = new JLabel(loadingIcon);

@@ -14,8 +14,8 @@ import java.sql.SQLException;
 
 public class Dashboard extends JPanel {
 
-    private JTable table;
-    private DefaultTableModel tableModel;
+    private final JTable table;
+    private final DefaultTableModel tableModel;
 
     public Dashboard(Easy_Travel easyTravel) throws SQLException {
         setLayout(new BorderLayout());
