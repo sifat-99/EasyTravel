@@ -28,9 +28,12 @@ Easy Travel is a Java-based application designed to help users explore and book 
 
 1. **Clone the repository**:
     ```sh
-    git clone https://github.com/your-username/easy-travel.git
-    cd easy-travel
+    git clone https://github.com/sifat-99/EasyTravel.git
+    cd EasyTravel
     ```
+   ```css
+    Use IntelliJ IDEA to open the project.
+   ```   
 
 2. **Configure the database**:
     - Create a MySQL database and import the provided SQL schema.
