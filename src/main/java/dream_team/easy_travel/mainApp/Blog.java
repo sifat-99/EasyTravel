@@ -158,7 +158,7 @@ public class Blog extends JPanel {
     private void displayBlogPosts(List<BlogPost> posts) {
         cardPanel.removeAll();
         for (BlogPost post : posts) {
-            JPanel card = createCard(post.getTitle(), post.getDescription(), post.getImage(), post.getId(), app);
+            JPanel card = createCard(post.getTitle(), post.getDescription(), post.getImage(), post.getId (), app);
             cardPanel.add(card);
         }
         cardPanel.revalidate();

@@ -126,6 +126,9 @@ public final class Easy_Travel {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        finally {
+            System.out.println("Blog Posts loaded successfully");
+        }
     }
 
     private JPanel createMenuBar() {
