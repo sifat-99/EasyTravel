@@ -53,7 +53,7 @@ Easy Travel is a Java-based application designed to help users explore and book 
 
 # Database Schema Documentation
 
-This document outlines the database schema used in the application. The schema consists of the following tables: `blog_posts`, `bookedUsersPayment`, `Nearby_Restaurants`, and `Users`.
+This document outlines the database schema used in the application. The schema consists of the following tables: `blog_posts`, `bookedUsersPayment`, `Restaurants`, and `Users`.
 
 ## Tables
 
