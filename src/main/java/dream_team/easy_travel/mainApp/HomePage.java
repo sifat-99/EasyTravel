@@ -180,8 +180,14 @@ public class HomePage extends JPanel {
 
         // Chatbot responses
         Map<String, String> responses = new HashMap<>();
-        responses.put("hi", "Hello! How can I assist you with your travel plans today?");
         responses.put("hello", "Hi there! Looking for some travel inspiration?");
+        responses.put("hi", "Hello! How can I assist you with your travel plans today?");
+        responses.put("hii", "Hello! How can I assist you with your travel plans today?");
+        responses.put("hey", "Hey! Ready to explore some amazing destinations?");
+        responses.put("good morning", "Good morning! Let's plan your next adventure.");
+        responses.put("good afternoon", "Good afternoon! Where are you dreaming of traveling to?");
+        responses.put("good evening", "Good evening! Let's find your perfect vacation spot.");
+        responses.put("good night", "Good night! Dream of your next travel destination.");
         responses.put("thanks", "You're welcome! Let me know if you have more questions.");
         responses.put("help", "I'm here to help you with travel recommendations, tips, and more!");
         responses.put("destination", "Where are you thinking of traveling to? I can help with recommendations.");
@@ -242,10 +248,10 @@ public class HomePage extends JPanel {
         responses.put("fitness", "Try yoga retreats in India or hiking trails in Patagonia.");
         responses.put("local cuisine", "Taste paella in Spain, ramen in Japan, or gumbo in New Orleans.");
         responses.put("festivals", "Diwali in India or the Lantern Festival in Thailand are amazing cultural experiences.");
-        responses.put("help", "I'm here to assist you with travel recommendations, planning, and more!");
         responses.put("emergency", "For emergencies, ensure you have your country's embassy contact details handy.");
         responses.put("sustainable travel", "Consider slow travel options like trains or staying in eco-certified accommodations.");
         responses.put("photography", "Capture stunning shots in Iceland, Namibia, or the Canadian Rockies.");
+        responses.put("recommand me a place", "Tanguar Haor, A beautiful Haor in Bangladesh");
 
         responses.put("default", "Our customer center will contact you as soon as possible.");
 
