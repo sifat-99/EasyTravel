@@ -79,12 +79,16 @@ public class HomePage extends JPanel {
         // Action listener for button
         exploreButton.addActionListener(e -> app.showPanel("Blog"));
 
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/chat.png")));
+        Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        icon = new ImageIcon(img);
+
         JButton chatbotButton = new Button();
-        chatbotButton.setText("📥");
-        chatbotButton.setBounds(1100, 650, 100, 100);
+        chatbotButton.setIcon(icon);
+        chatbotButton.setBackground(Color.black);
+//        chatbotButton.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4, true)); // Rounded border
+        chatbotButton.setBounds(1090, 650, 100, 100);
         chatbotButton.setFont(new Font("Arial", Font.PLAIN, 50));
-        chatbotButton.setBorder(null);
-        chatbotButton.setContentAreaFilled(false);
         chatbotButton.setFocusPainted(false);
         overlayPanel.add(chatbotButton);
 
@@ -144,13 +148,19 @@ public class HomePage extends JPanel {
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.setBackground(Color.WHITE);
         inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        inputPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2, true));
 
         JTextField inputField = new JTextField();
         inputField.setFont(new Font("Arial", Font.PLAIN, 14));
         inputField.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/send.png")));
+        Image img = icon.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        icon = new ImageIcon(img);
+
         JButton sendButton = new Button();
-        sendButton.setText("↗");
+        sendButton.setIcon(icon);
         sendButton.setBackground(new Color(59, 89, 152));
         sendButton.setPreferredSize(new Dimension(50, 50));
         sendButton.setForeground(Color.WHITE);
