@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.plaf.basic.BasicScrollBarUI;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -81,7 +82,29 @@ public class Blog extends JPanel {
         });
         searchPanel.add(searchButton, BorderLayout.EAST);
 
-        layeredPane.add(searchPanel, Integer.valueOf(2));
+        JButton refreshButton = new JButton("Refresh");
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadBlogPosts(app);
+            }
+        });
+        searchPanel.add(refreshButton, BorderLayout.WEST);
+
+        JButton uploadYourThoughts = new JButton("Upload Blog");
+        uploadYourThoughts.setBounds(1000, 10, 150, 50);
+        layeredPane.add(uploadYourThoughts, Integer.valueOf(2));
+
+        uploadYourThoughts.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog popup = CreateBlogUploadPopup(app,blogPosts);
+                popup.setVisible(true);
+            }
+        });
+
+
+        layeredPane.add(searchPanel, Integer.valueOf(3));
         searchPanel.setBounds(200, 50, 800, 50);
 
         // Load initial blog posts
@@ -280,5 +303,39 @@ public class Blog extends JPanel {
 
         return card;
     }
+
+    private JDialog CreateBlogUploadPopup(Easy_Travel app, List<BlogPost> blogPosts) {
+        JFrame uploadPanel = app.getFrame();
+        JDialog popupUploadDialogue = new JDialog(uploadPanel, "Upload Blog", true);
+        popupUploadDialogue.setUndecorated(true);
+        popupUploadDialogue.setLayout(new BorderLayout());
+        popupUploadDialogue.setBackground(Color.DARK_GRAY);
+
+        // Create the PostBlog panel
+        PostBlog postBlogPanel = new PostBlog(blogPosts, app);
+
+        // Add the PostBlog panel to the dialog
+        popupUploadDialogue.add(postBlogPanel, BorderLayout.CENTER);
+
+        // Close button panel
+        JPanel closePanel = new JPanel();
+        closePanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        closePanel.setBackground(Color.DARK_GRAY);
+
+        JButton closeButton = new JButton("Close");
+        closeButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        closeButton.addActionListener(e -> popupUploadDialogue.dispose());
+        closePanel.add(closeButton);
+
+        popupUploadDialogue.add(closePanel, BorderLayout.SOUTH);
+
+        popupUploadDialogue.setSize(800, 600);
+        popupUploadDialogue.setLocationRelativeTo(uploadPanel);
+        popupUploadDialogue.setAlwaysOnTop(true);
+
+        return popupUploadDialogue;
+    }
+
+
 
 }

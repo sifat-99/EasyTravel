@@ -23,10 +23,6 @@ public class PostBlog extends JPanel {
     private final JTextField titleField;
     private final JTextField locationField;
     private final JTextArea descriptionArea;
-    private final List<JTextField> restaurantNames = new ArrayList<>();
-    private final List<JTextField> restaurantLocations = new ArrayList<>();
-    private final List<JTextField> restaurantRatings = new ArrayList<>();
-    private final List<JTextField> restaurantPrices = new ArrayList<>();
     private final List<byte[]> imagePaths = new ArrayList<>();
     private final List<BlogPost> blogPosts;
     private final Easy_Travel app;
@@ -82,49 +78,6 @@ public class PostBlog extends JPanel {
         gbc.gridy = 1;
         add(locationField, gbc);
 
-        JLabel restaurantsLabel = new JLabel("Restaurants (Name, Location, Rating, Price)");
-        restaurantsLabel.setFont( new Font("Arial", Font.PLAIN, 20));
-        restaurantsLabel.setForeground(Color.WHITE);
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        add(restaurantsLabel, gbc);
-
-        gbc.gridwidth = 1;
-        int yPosition = 3;
-        for (int i = 0; i < 4; i++) {
-            JTextField nameField = new JTextField("Restaurant Name");
-            nameField.setPreferredSize(new Dimension(200, 30));
-            restaurantNames.add(nameField);
-
-            JTextField locationField = new JTextField("Location");
-            locationField.setPreferredSize(new Dimension(100, 30));
-            restaurantLocations.add(locationField);
-
-            JTextField ratingField = new JTextField("Rating (1-5)");
-            ratingField.setPreferredSize(new Dimension(100, 30));
-            restaurantRatings.add(ratingField);
-
-            JTextField priceField = new JTextField("Price");
-            priceField.setPreferredSize(new Dimension(80, 30));
-            restaurantPrices.add(priceField);
-
-            gbc.gridx = 0;
-            gbc.gridy = yPosition;
-            add(nameField, gbc);
-
-            gbc.gridx = 1;
-            add(locationField, gbc);
-
-            gbc.gridx = 2;
-            add(ratingField, gbc);
-
-            gbc.gridx = 3;
-            add(priceField, gbc);
-
-            yPosition++;
-        }
-
         JLabel descriptionLabel = new JLabel("Description: ");
         descriptionLabel.setFont( new Font("Arial", Font.PLAIN, 20));
         descriptionLabel.setForeground(Color.WHITE);
@@ -135,12 +88,12 @@ public class PostBlog extends JPanel {
         descriptionArea.setPreferredSize(new Dimension(300, 100));
 
         gbc.gridx = 0;
-        gbc.gridy = yPosition;
+        gbc.gridy = 3;
         gbc.gridwidth = 1;
         add(descriptionLabel, gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = yPosition;
+        gbc.gridy = 3;
         gbc.gridwidth = 2;
         add(new JScrollPane(descriptionArea), gbc);
 
@@ -151,7 +104,7 @@ public class PostBlog extends JPanel {
         imageUpload.addActionListener(e -> uploadImages());
 
         gbc.gridx = 1;
-        gbc.gridy = yPosition + 1;
+        gbc.gridy = 3 + 1;
         add(imageUpload, gbc);
 
         JButton postButton = getPostButton();
@@ -159,7 +112,7 @@ public class PostBlog extends JPanel {
         postButton.setForeground(Color.BLACK);
         postButton.setPreferredSize(new Dimension(150, 30));
 
-        gbc.gridy = yPosition + 2;
+        gbc.gridy = 3 + 2;
         add(postButton, gbc);
     }
 
@@ -216,17 +169,7 @@ public class PostBlog extends JPanel {
                 return;
             }
 
-            List<String[]> restaurantData = new ArrayList<>();
-            for (int i = 0; i < 4; i++) {
-                restaurantData.add(new String[]{
-                        restaurantNames.get(i).getText(),
-                        restaurantLocations.get(i).getText(),
-                        restaurantRatings.get(i).getText(),
-                        restaurantPrices.get(i).getText()
-                });
-            }
-
-            saveBlogPostToDatabase(title, location, description, restaurantData, imagePaths);
+            saveBlogPostToDatabase(title, location, description, imagePaths);
             int newId = blogPosts.size() + 1;
             blogPosts.add(new BlogPost(newId, title, description, imagePaths.get(0)));
             app.refreshBlogPanel();
@@ -235,9 +178,8 @@ public class PostBlog extends JPanel {
     }
 
 
-    private void saveBlogPostToDatabase(String title, String location, String description, List<String[]> restaurantData, List<byte[]> imagePaths) {
+    private void saveBlogPostToDatabase(String title, String location, String description,  List<byte[]> imagePaths) {
         String insertBlogSQL = "INSERT INTO blog_posts (title, location, description, image1, image2, image3) VALUES (?, ?, ?, ?, ?, ?)";
-        String insertRestaurantSQL = "INSERT INTO Nearby_Restaurants (blog_post_id, name, location, rating, price) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(insertBlogSQL)) {
             stmt.setString(1, title);
@@ -248,30 +190,6 @@ public class PostBlog extends JPanel {
             stmt.setBytes(6, imagePaths.get(2));
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(this, "Blog post created successfully");
-
-            // Get the ID of the newly inserted blog post
-            int blogId = -1;
-            try (PreparedStatement idStmt = conn.prepareStatement("SELECT MAX(id) FROM blog_posts");
-                 ResultSet rs = idStmt.executeQuery()) {
-                if (rs.next()) {
-                    blogId = rs.getInt(1);
-                }
-            }
-            if (blogId == -1) {
-                throw new SQLException("Failed to retrieve blog ID");
-            }
-            else {
-                for (String[] data : restaurantData) {
-                    try (PreparedStatement restaurantStmt = conn.prepareStatement(insertRestaurantSQL)) {
-                        restaurantStmt.setInt(1, blogId);
-                        restaurantStmt.setString(2, data[0]);
-                        restaurantStmt.setString(3, data[1]);
-                        restaurantStmt.setString(4, data[2]);
-                        restaurantStmt.setString(5, data[3]);
-                        restaurantStmt.executeUpdate();
-                    }
-                }
-            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Failed to save blog post: " + ex.getMessage());
         }
