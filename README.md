@@ -2,6 +2,17 @@
 
 Easy Travel is a Java-based application designed to help users explore and book travel destinations, including nearby restaurants and other attractions. The application features an admin dashboard for managing bookings and user data.
 
+## Project Overview (Screenshots)
+
+### Login Page
+![CleanShot 2024-11-27 at 02 44 37@2x](https://github.com/user-attachments/assets/0de34191-2edc-47c7-a8d3-5edd047a4e6b)
+
+### Home Page
+![HomePage](https://github.com/user-attachments/assets/509b49a3-04fa-4c83-931a-b859158bfb49)
+
+### About Page
+![CleanShot 2024-11-27 at 02 47 47@2x](https://github.com/user-attachments/assets/0c001199-6358-4336-87be-c959575bf50f)
+
 ## Features
 
 - **User Authentication**: Login and logout functionality.
@@ -100,31 +111,36 @@ This table stores payment information for users who book restaurants.
 | `booking_date`   | `TIMESTAMP`     | `NOT NULL DEFAULT CURRENT_TIMESTAMP` | Date and time of the booking.            |
 
 ---
-
-### 3. `Nearby_Restaurants`
-
+### 4. `Resturents`
 ```sql
-   CREATE TABLE Nearby_Restaurants (
+CREATE TABLE Resturents (
     id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    blog_post_id INT(11) DEFAULT NULL,
-    name VARCHAR(255) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    rating DECIMAL(3, 2) DEFAULT NULL,
-    price VARCHAR(50) DEFAULT NULL,
-    FOREIGN KEY (blog_post_id) REFERENCES blog_posts(id)
-   );
+    title VARCHAR(255) NOT NULL,
+    resturent_1 VARCHAR(255) NOT NULL,
+   price_1 DECIMAL(10, 2) NOT NULL,
+    resturent_2 VARCHAR(255) NOT NULL,
+    price_2 DECIMAL(10, 2) NOT NULL,
+    resturent_3 VARCHAR(255) NOT NULL,
+    price_3 DECIMAL(10, 2) NOT NULL
+    resturent_4 VARCHAR(255) NOT NULL,
+    price_4 DECIMAL(10, 2) NOT NULL
+);
+
 ```
+This table stores information about popular Restaurants.
 
-This table stores information about restaurants near blog post locations.
-
-| Column Name  | Data Type       | Attributes                           | Description                              |
-|--------------|-----------------|--------------------------------------|------------------------------------------|
-| `id`         | `INT(11)`       | `NOT NULL PRIMARY KEY AUTO_INCREMENT` | Unique identifier for each restaurant.   |
-| `blog_post_id`| `INT(11)`       | `DEFAULT NULL`                      | References the `id` column in the `blog_posts` table. |
-| `name`       | `VARCHAR(255)`  | `NOT NULL`                          | Name of the restaurant.                  |
-| `location`   | `VARCHAR(255)`  | `NOT NULL`                          | Location of the restaurant.              |
-| `rating`     | `DECIMAL(3, 2)` | `DEFAULT NULL`                      | Rating of the restaurant (e.g., 4.5).    |
-| `price`      | `VARCHAR(50)`   | `DEFAULT NULL`                      | Price range of the restaurant.           |
+| Column Name  | Data Type       | Attributes                   | Description                             |
+|--------------|-----------------|------------------------------|-----------------------------------------|
+| `id`         | `INT(11)`       | `NOT NULL PRIMARY KEY AUTO_INCREMENT` | Unique identifier for each restaurant.  |
+| `title`      | `VARCHAR(255)`  | `NOT NULL`                  | Title of the restaurant.                |
+| `resturent_1`| `VARCHAR(255)`  | `NOT NULL`                  | Name of the first restaurant.           |
+| `price_1`    | `DECIMAL(10, 2)`| `NOT NULL`                  | Price of the first restaurant.          |
+| `resturent_2`| `VARCHAR(255)`  | `NOT NULL`                  | Name of the second restaurant.          |
+| `price_2`    | `DECIMAL(10, 2)`| `NOT NULL`                  | Price of the second restaurant.         |
+| `resturent_3`| `VARCHAR(255)`  | `NOT NULL`                  | Name of the third restaurant.           |
+| `price_3`    | `DECIMAL(10, 2)`| `NOT NULL`                  | Price of the third restaurant.          |
+| `resturent_4`| `VARCHAR(255)`  | `NOT NULL`                  | Name of the fourth restaurant.          |
+| `price_4`    | `DECIMAL(10, 2)`| `NOT NULL`                  | Price of the fourth restaurant.         |
 
 ---
 
