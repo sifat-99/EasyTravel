@@ -444,6 +444,7 @@ public class HomePage extends JPanel {
         responses.put("desert landmarks", "Visit Uluru in Australia or the dunes in Death Valley.");
         responses.put("winter markets", "Explore Christmas markets in Vienna, Prague, or Strasbourg.");
         responses.put("budget-friendly road trips", "Drive through New Zealand or Scotland.");
+        responses.put("default", "I'm still learning! How can I assist you today?");
 
 
         @FunctionalInterface
@@ -477,7 +478,13 @@ public class HomePage extends JPanel {
             chatArea.add(alignmentWrapper);
             chatArea.revalidate();
             chatArea.repaint();
-            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+
+            // Scroll to the bottom of the chat area
+         SwingUtilities.invokeLater(() -> {
+        JScrollBar vertical = scrollPane.getVerticalScrollBar();
+        vertical.setValue(vertical.getMaximum());
+        });
+
 
 
         };
