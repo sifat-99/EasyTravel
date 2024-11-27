@@ -446,6 +446,7 @@ public class HomePage extends JPanel {
         responses.put("budget-friendly road trips", "Drive through New Zealand or Scotland.");
         responses.put("default", "I'm still learning! How can I assist you today?");
 //        Updated hare for testing
+//        Again testing the update
 
         @FunctionalInterface
         interface MessageAdder {
