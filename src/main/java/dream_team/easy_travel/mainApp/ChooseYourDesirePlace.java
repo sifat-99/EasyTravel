@@ -130,7 +130,7 @@ public class ChooseYourDesirePlace extends JPanel {
                     restaurantTable.getColumn("Action").setCellRenderer((table, value, isSelected, hasFocus, row, column) -> {
                         JButton button = new Button();
                         button.setText("Book");
-                        button.setBackground(new Color(50, 205, 50)); // Green button
+                        button.setBackground(new Color(32, 203, 243)); // Green button
                         double payPrice = (double) table.getValueAt(row, 1);
                         button.addActionListener(e -> handleBooking(row, placeName, Double.parseDouble(String.valueOf(payPrice))));  // pass the row index and place name
                         return button;
