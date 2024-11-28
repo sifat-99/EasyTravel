@@ -6,6 +6,8 @@ import dream_team.easy_travel.Easy_Travel;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Dashboard extends JPanel {
-
     private final JTable table;
     private final DefaultTableModel tableModel;
 
@@ -33,15 +34,23 @@ public class Dashboard extends JPanel {
         tableModel = new DefaultTableModel(
                 new Object[]{"ID", "User Name", "Restaurant Name", "Amount", "Transaction ID", "Booking Date", "Action"}, 0
         );
-        table = new JTable(tableModel);
+        table = new JTable(tableModel) {
+            @Override
+            public TableCellRenderer getCellRenderer(int row, int column) {
+                if (column == 6) {
+                    return new ActionRenderer();
+                }
+                return super.getCellRenderer(row, column);
+            }
+        };
 
-        // Customize table appearance
-        table.setRowHeight(30); // Increase row height
-        table.setFont(new Font("Arial", Font.PLAIN, 14)); // Set font
-        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14)); // Header font
-        table.getTableHeader().setBackground(new Color(135, 206, 250)); // Light sky blue header background
+        table.getColumnModel().getColumn(6).setCellEditor(new ActionEditor(this));
+
+        table.setRowHeight(30);
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+        table.getTableHeader().setBackground(new Color(135, 206, 250));
         table.getTableHeader().setForeground(Color.BLACK);
-
         // Custom renderer for row styling
         DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
             @Override
@@ -72,32 +81,6 @@ public class Dashboard extends JPanel {
 
         // Load data into the table
         loadTableData();
-
-        // Panel for buttons
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(240, 248, 255)); // Match panel background
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        JButton approveButton = new JButton("Approve");
-        JButton declineButton = new JButton("Decline");
-
-        approveButton.addActionListener(e -> {
-            try {
-                approveSelectedBooking(ConnectDB.getConnection());
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-        declineButton.addActionListener(e -> {
-            try {
-                declineSelectedBooking(ConnectDB.getConnection());
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-        buttonPanel.add(approveButton);
-        buttonPanel.add(declineButton);
     }
 
     private void loadTableData() {
@@ -130,45 +113,108 @@ public class Dashboard extends JPanel {
         }
     }
 
-    private void approveSelectedBooking(Connection connection) {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow != -1) {
-            int bookingId = (int) tableModel.getValueAt(selectedRow, 0);
+    public void approveSelectedBooking(Object bookingIdObj) {
+        int bookingId = (int) bookingIdObj;
+        try {
+            Connection connection = ConnectDB.getConnection();
+            String query = "UPDATE bookedUsersPayment SET status = 'Approved' WHERE id = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, bookingId);
+            stmt.executeUpdate();
 
-            try {
-                String query = "UPDATE bookedUsersPayment SET status = 'Approved' WHERE id = ?";
-                PreparedStatement stmt = connection.prepareStatement(query);
-                stmt.setInt(1, bookingId);
-                stmt.executeUpdate();
-
-                tableModel.setValueAt("Approved", selectedRow, 6); // Update Action column
-                JOptionPane.showMessageDialog(this, "Booking Approved!");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a booking to approve.");
+            int selectedRow = findRowById(bookingId);
+            tableModel.setValueAt("Approved", selectedRow, 6);
+            JOptionPane.showMessageDialog(this, "Booking Approved!");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    private void declineSelectedBooking(Connection connection) {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow != -1) {
-            int bookingId = (int) tableModel.getValueAt(selectedRow, 0);
+    public void declineSelectedBooking(Object bookingIdObj) {
+        int bookingId = (int) bookingIdObj;
+        try {
+            Connection connection = ConnectDB.getConnection();
+            String query = "UPDATE bookedUsersPayment SET status = 'Declined' WHERE id = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setInt(1, bookingId);
+            stmt.executeUpdate();
 
-            try {
-                String query = "UPDATE bookedUsersPayment SET status = 'Declined' WHERE id = ?";
-                PreparedStatement stmt = connection.prepareStatement(query);
-                stmt.setInt(1, bookingId);
-                stmt.executeUpdate();
+            int selectedRow = findRowById(bookingId);
+            tableModel.setValueAt("Declined", selectedRow, 6);
+            JOptionPane.showMessageDialog(this, "Booking Declined!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-                tableModel.setValueAt("Declined", selectedRow, 6); // Update Action column
-                JOptionPane.showMessageDialog(this, "Booking Declined!");
-            } catch (SQLException e) {
-                e.printStackTrace();
+    private int findRowById(int bookingId) {
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            if ((int) tableModel.getValueAt(i, 0) == bookingId) {
+                return i;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Please select a booking to decline.");
+        }
+        return -1;
+    }
+
+    private static class ActionRenderer extends JPanel implements TableCellRenderer {
+        public ActionRenderer() {
+            setLayout(new FlowLayout(FlowLayout.CENTER));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column
+        ) {
+            removeAll();
+
+            JButton approveButton = new JButton("Approve");
+            JButton declineButton = new JButton("Decline");
+
+            approveButton.setEnabled("Pending".equals(value));
+            declineButton.setEnabled("Pending".equals(value));
+
+            add(approveButton);
+            add(declineButton);
+
+            return this;
+        }
+    }
+
+    private static class ActionEditor extends AbstractCellEditor implements TableCellEditor {
+        private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        private final JButton approveButton = new JButton("Approve");
+        private final JButton declineButton = new JButton("Decline");
+        private final Dashboard dashboard;
+        private int selectedRow;
+
+        public ActionEditor(Dashboard dashboard) {
+            this.dashboard = dashboard;
+
+            approveButton.addActionListener(e -> {
+                dashboard.approveSelectedBooking(dashboard.tableModel.getValueAt(selectedRow, 0));
+                stopCellEditing();
+            });
+
+            declineButton.addActionListener(e -> {
+                dashboard.declineSelectedBooking(dashboard.tableModel.getValueAt(selectedRow, 0));
+                stopCellEditing();
+            });
+
+            panel.add(approveButton);
+            panel.add(declineButton);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            selectedRow = row;
+            approveButton.setEnabled("Pending".equals(value));
+            declineButton.setEnabled("Pending".equals(value));
+            return panel;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return null;
         }
     }
 }

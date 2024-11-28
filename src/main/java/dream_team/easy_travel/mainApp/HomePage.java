@@ -137,14 +137,31 @@ public class HomePage extends JPanel {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         headerPanel.add(titleLabel, BorderLayout.CENTER);
 
-        // Chat area
-        JPanel chatArea = new JPanel();
-        chatArea.setLayout(new BoxLayout(chatArea, BoxLayout.Y_AXIS));
-        chatArea.setBackground(Color.WHITE);
+        // Chat area with background image
+        JPanel chatArea = new JPanel() {
+            private final Image backgroundImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/WPBG.png"))).getImage();
 
-        JScrollPane scrollPane = new JScrollPane(chatArea);
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        chatArea.setLayout(new BoxLayout(chatArea, BoxLayout.Y_AXIS));
+        chatArea.setOpaque(false); // Ensure transparency
+
+// JScrollPane wraps the chat area
+        JScrollPane scrollPane = new JScrollPane(chatArea) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                chatArea.repaint(); // Force chat area to repaint background image
+            }
+        };
         scrollPane.setBorder(null);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getViewport().setOpaque(false); // Transparent viewport
+        scrollPane.setOpaque(false); // Transparent JScrollPane
 
         // Input panel
         JPanel inputPanel = new JPanel(new BorderLayout());
@@ -453,19 +470,20 @@ public class HomePage extends JPanel {
             void addMessage(String sender, String message, boolean isUser);
         }
 
-        // Method to add chat bubbles
+        // Add new chat bubbles
         MessageAdder addMessage = (String sender, String message, boolean isUser) -> {
             JPanel bubble = new JPanel();
-            bubble.setBackground(isUser ? new Color(220, 248, 198) : new Color(240, 240, 240)); // Different colors for user/bot
+            bubble.setBackground(isUser ? new Color(220, 248, 198) : new Color(240, 240, 240));
             bubble.setLayout(new BorderLayout());
             bubble.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             bubble.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
-            bubble.setBorder(new RoundedBorder(10)); // Add border radius
+            bubble.setBorder(new RoundedBorder(10)); // Rounded corners
 
             JLabel messageLabel = new JLabel("<html><body style='width: 200px;'><b>" + sender + ":</b> " + message + "</body></html>");
             messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
             messageLabel.setForeground(Color.BLACK);
             bubble.add(messageLabel, BorderLayout.CENTER);
+
 
             JLabel timestampLabel = new JLabel(new SimpleDateFormat("hh:mm a").format(new Date()));
             timestampLabel.setFont(new Font("Arial", Font.ITALIC, 10));
@@ -473,20 +491,18 @@ public class HomePage extends JPanel {
             bubble.add(timestampLabel, BorderLayout.SOUTH);
 
             JPanel alignmentWrapper = new JPanel(new FlowLayout(isUser ? FlowLayout.RIGHT : FlowLayout.LEFT));
-            alignmentWrapper.setBackground(Color.WHITE);
+            alignmentWrapper.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
             alignmentWrapper.add(bubble);
 
             chatArea.add(alignmentWrapper);
             chatArea.revalidate();
-            chatArea.repaint();
+            chatArea.repaint(); // Ensure the background is redrawn
 
             // Scroll to the bottom of the chat area
-         SwingUtilities.invokeLater(() -> {
-        JScrollBar vertical = scrollPane.getVerticalScrollBar();
-        vertical.setValue(vertical.getMaximum());
-        });
-
-
+            SwingUtilities.invokeLater(() -> {
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            });
 
         };
 
