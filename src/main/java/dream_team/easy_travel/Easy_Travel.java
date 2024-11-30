@@ -325,7 +325,7 @@ public final class Easy_Travel {
     public void refreshBlogPanel() {
         Blog blogPanel = (Blog) getPanel("Blog");
         if (blogPanel != null) {
-            blogPanel.loadBlogPosts(Easy_Travel.this);
+            blogPanel.loadBlogPosts();
         }
     }
 

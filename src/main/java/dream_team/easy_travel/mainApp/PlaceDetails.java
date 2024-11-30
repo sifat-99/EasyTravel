@@ -25,16 +25,19 @@ public class PlaceDetails extends JPanel {
 //        setBackground(new Color(240, 248, 255)); // Light blue background for a clean design
 
         // Fetch and display blog details
-        fetchBlogDetails(id);
+        fetchBlogDetails(id,app);
 
-        // Back button
-        JButton backButton = new JButton("⬅ Back");
-        backButton.setBounds(50, 500, 100, 30);
-        backButton.setBackground(new Color(173, 216, 230)); // Soft blue button
-        backButton.setBounds(50, 630, 100, 30);
-        backButton.setFocusPainted(false);
-        add(backButton);
-        backButton.addActionListener(e -> app.showPanel("Blog"));
+//        // Back button
+//        JButton backButton = new Button();
+//                backButton.setText("⬅ Back");
+//        backButton.setBounds(50, 500, 100, 30);
+//        backButton.setBackground(new Color(173, 216, 230)); // Soft blue button
+//        backButton.setBounds(50, 630, 100, 30);
+////        backButton.setFocusPainted(false);
+//        add(backButton);
+//
+//        backButton.addActionListener(e -> app.showPanel("places"));
+
 
         // Start image carousel if images are loaded
         if (images != null && images.length > 0) {
@@ -42,7 +45,7 @@ public class PlaceDetails extends JPanel {
         }
     }
 
-    private void fetchBlogDetails(int id) {
+    private void fetchBlogDetails(int id, Easy_Travel app) {
         String query = "SELECT title, location, description, image1, image2, image3 " +
                         "FROM blog_posts " +
                         "WHERE id = ?";
@@ -100,69 +103,19 @@ public class PlaceDetails extends JPanel {
                 imageLabel.setVerticalAlignment(JLabel.CENTER);
                 imageLabel.setIcon(new ImageIcon(images[0].getImage().getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH)));
                 add(imageLabel);
-}
+                  // Back button
+                  JButton backButton = new Button();
+                  backButton.setText("⬅ Back");
+                  backButton.setBounds(50, 500, 100, 30);
+                  backButton.setBackground(new Color(173, 216, 230)); // Soft blue button
+                  backButton.setBounds(50, 630, 100, 30);
+                  backButton.setFocusPainted(true);
+                  backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                  add(backButton);
 
-//                // Collect restaurant details
-//                do {
-//                    String restaurantName = rs.getString("name");
-//                    if (restaurantName != null) {
-//                        String restaurantLocation = rs.getString("restaurant_location");
-//                        double rating = rs.getDouble("rating");
-//                        double price = 0.0;
-//                        try {
-//                            price = rs.getDouble("price");
-//                        } catch (NumberFormatException e) {
-//                            System.err.println("Invalid price format: " + rs.getString("price"));
-//                        }
-//                        // Add formatted restaurant detail string to the list
-//                        restaurants.add(String.format("Name: %s,\nLocation: %s,\nRating: %.1f,\nPrice: %.2f", restaurantName, restaurantLocation, rating, price));
-//                    }
-//                } while (rs.next());
+                  backButton.addActionListener(e -> app.showPanel("Blog"));
+                }
 
-//                // Display restaurants in accordion format
-//                if (!restaurants.isEmpty()) {
-//                    JPanel accordionPanel = new JPanel();
-//                    accordionPanel.setBounds(510, 20, 650, 350);
-//                    accordionPanel.setLayout(new BoxLayout(accordionPanel, BoxLayout.Y_AXIS));
-////                    accordionPanel.setBackground(new Color(240, 248, 255)); // Match panel background
-//                    accordionPanel.setOpaque(false);
-//
-//
-//                    for (String restaurantDetails : restaurants) {
-//                        JPanel restaurantPanel = new JPanel(new BorderLayout());
-//                        restaurantPanel.setBackground(new Color(240, 255, 255)); // Light cyan
-//                        restaurantPanel.setOpaque(false);
-//                        restaurantPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-//                        restaurantPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-//
-//                        // Restaurant details text area
-//                        JTextArea detailsArea = new JTextArea(restaurantDetails);
-//                        detailsArea.setFont(new Font("Arial", Font.PLAIN, 14));
-//                        detailsArea.setLineWrap(true);
-//                        detailsArea.setWrapStyleWord(true);
-//                        detailsArea.setEditable(false);
-//                        detailsArea.setOpaque(false);
-////                        detailsArea.setBackground(new Color(240, 255, 255)); // Match panel background
-//
-//                        // Booking button
-//                        JButton bookButton = new Button();
-//                        bookButton.setText("Book Now");
-//                        bookButton.setPreferredSize(new Dimension(100, 20));
-//                        bookButton.setBackground(new Color(144, 238, 144)); // Light green for booking
-//                        bookButton.addActionListener(e -> JOptionPane.showMessageDialog(
-//                                this, "You booked " + restaurantDetails.split(",")[0].split(": ")[1]));
-//
-//                        // Add details and button to the panel
-//                        restaurantPanel.add(detailsArea, BorderLayout.CENTER);
-//                        restaurantPanel.add(bookButton, BorderLayout.EAST);
-//
-//                        // Add restaurant panel to the accordion
-//                        accordionPanel.add(restaurantPanel);
-//                    }
-//
-//                    // Add accordion panel to the main panel
-//                    add(accordionPanel);
-//                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -179,20 +132,6 @@ public class PlaceDetails extends JPanel {
         timer.start();
     }
 
-    // Restaurant class for storing restaurant data
-    private static class Restaurant {
-        String name;
-        String location;
-        double rating;
-        double price;
-
-        Restaurant(String name, String location, double rating, double price) {
-            this.name = name;
-            this.location = location;
-            this.rating = rating;
-            this.price = price;
-        }
-    }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

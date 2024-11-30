@@ -2,6 +2,7 @@ package dream_team.easy_travel.mainApp;
 
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
+import dream_team.easy_travel.swing.Button;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -86,7 +86,7 @@ public class Blog extends JPanel {
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loadBlogPosts(app);
+                loadBlogPosts();
             }
         });
         searchPanel.add(refreshButton, BorderLayout.WEST);
@@ -108,10 +108,10 @@ public class Blog extends JPanel {
         searchPanel.setBounds(200, 50, 800, 50);
 
         // Load initial blog posts
-        loadBlogPosts(app);
+        loadBlogPosts();
 
         JScrollPane scrollPane = new JScrollPane(cardPanel);
-        scrollPane.setBounds(200, 110, 800, 600);
+        scrollPane.setBounds(100, 110, 1000, 550);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -154,7 +154,7 @@ public class Blog extends JPanel {
         };
     }
 
-    public void loadBlogPosts(Easy_Travel app) {
+    public void loadBlogPosts() {
         blogPosts = fetchBlogPostsFromDatabase();
         displayBlogPosts(blogPosts);
     }
@@ -222,20 +222,28 @@ public class Blog extends JPanel {
         card.setBorder(new TitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.BOLD, 18)));
         card.setOpaque(false);
 
-        JTextPane descriptionLabel = new JTextPane();
+        JTextArea descriptionLabel = new JTextArea();
         descriptionLabel.setText(description);
         descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         descriptionLabel.setForeground(Color.WHITE);
         descriptionLabel.setEditable(false);
         descriptionLabel.setOpaque(false);
+        descriptionLabel.setPreferredSize(new Dimension(250, 150));
         // Justify text
-        StyledDocument doc = descriptionLabel.getStyledDocument();
-        SimpleAttributeSet justify = new SimpleAttributeSet();
-        StyleConstants.setAlignment(justify, StyleConstants.ALIGN_LEFT);
-        doc.setParagraphAttributes(0, doc.getLength(), justify, false);
-        descriptionLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the description
+        descriptionLabel.setLineWrap(true);
+        descriptionLabel.setWrapStyleWord(true);
+        descriptionLabel.setMargin(new Insets(10, 10, 10, 10));
+        descriptionLabel.setCaretPosition(0);
+        descriptionLabel.setBackground(new Color(0, 0, 0, 0)); // Transparent background
+
+//        StyledDocument doc = descriptionLabel.getStyledDocument();
+//        SimpleAttributeSet justify = new SimpleAttributeSet();
+//        StyleConstants.setAlignment(justify, StyleConstants.ALIGN_LEFT);
+//        doc.setParagraphAttributes(0, doc.getLength(), justify, false);
+//        descriptionLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the description
 
         JScrollPane scrollPane = new JScrollPane(descriptionLabel);
+        scrollPane.setPreferredSize(new Dimension(250, 150)); // Set the size of the scroll pane
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(null);
@@ -259,7 +267,7 @@ public class Blog extends JPanel {
             }
 
             private JButton createZeroButton() {
-                JButton button = new JButton();
+                JButton button = new Button();
                 button.setPreferredSize(new Dimension(0, 0));
                 button.setMinimumSize(new Dimension(0, 0));
                 button.setMaximumSize(new Dimension(0, 0));
@@ -294,7 +302,8 @@ public class Blog extends JPanel {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10)); // Center-align the button with some top padding
         buttonPanel.setOpaque(false);
-        JButton viewButton = new JButton("View");
+        JButton viewButton = new Button();
+        viewButton.setText("View more");
         viewButton.setPreferredSize(new Dimension(80, 25)); // Make button smaller
         viewButton.addActionListener(e -> app.showPanelWithID("showBlogPostDetails", id));
         buttonPanel.add(viewButton);
