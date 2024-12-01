@@ -1,9 +1,7 @@
 package dream_team.easy_travel.AdminPanel;
-
 import dream_team.easy_travel.DatabaseConnection.*;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -213,12 +211,9 @@ public class Dashboard extends JPanel {
         private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         private final JButton approveButton = new Button();
         private final JButton declineButton = new Button();
-        private final Dashboard dashboard;
         private int selectedRow;
 
         public ActionEditor(Dashboard dashboard) {
-            this.dashboard = dashboard;
-
             approveButton.setText("Approve");
             declineButton.setText("Decline");
             approveButton.setPreferredSize(new Dimension(100, 30));
@@ -229,21 +224,17 @@ public class Dashboard extends JPanel {
             approveButton.setForeground(Color.WHITE);
             declineButton.setBackground(new Color(255, 69, 0)); // Red for Decline
             declineButton.setForeground(Color.WHITE);
-
             approveButton.addActionListener(e -> {
                 dashboard.approveSelectedBooking(dashboard.tableModel.getValueAt(selectedRow, 0));
                 stopCellEditing();
             });
-
             declineButton.addActionListener(e -> {
                 dashboard.declineSelectedBooking(dashboard.tableModel.getValueAt(selectedRow, 0));
                 stopCellEditing();
             });
-
             panel.add(approveButton);
             panel.add(declineButton);
         }
-
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             selectedRow = row;
@@ -256,7 +247,6 @@ public class Dashboard extends JPanel {
 
             return panel;
         }
-
         @Override
         public Object getCellEditorValue() {
             return null;

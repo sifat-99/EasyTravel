@@ -34,13 +34,6 @@ public final class Easy_Travel {
     private final List<BlogPost> blogPosts;
     private PanelLoginAndRegister loginAndRegister;
     private final DecimalFormat df = new DecimalFormat("##0.###", DecimalFormatSymbols.getInstance(Locale.US));
-    private MigLayout layout;
-    private PanelCover cover;
-//    private PanelLoginAndRegister loginAndRegister;
-    private boolean isLogin = true;
-    private final double addSize = 30;
-    private final double coverSize = 40;
-    private final double loginSize = 60;
     private JButton adminDashboardButton;
     private JButton placeButton;
     public static void main(String[] args) {
@@ -146,7 +139,7 @@ public final class Easy_Travel {
 
         // Create and style navigation buttons
         homeButton = createStyledButton("Home");
-        placeButton = createStyledButton("Restaurants");
+        placeButton = createStyledButton("Places");
         blogButton = createStyledButton("Blogs");
         postButton = createStyledButton("Post");
         aboutButton = createStyledButton("About");
@@ -191,8 +184,6 @@ public final class Easy_Travel {
                     updateButtonColors(placeButton);
                     updateFrameTitle("Book your Restaurant");
                 }
-
-
             }
         });
         blogButton.addActionListener(e -> {
