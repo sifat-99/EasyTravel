@@ -1,6 +1,7 @@
 package dream_team.easy_travel.mainApp;
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
+import dream_team.easy_travel.swing.Button;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,7 @@ public class PostBlog extends JPanel {
         add(titleField, gbc);
 
         JLabel locationLabel = new JLabel("Location: ");
-        locationLabel.setFont( new Font("Arial", Font.PLAIN, 20));
+        locationLabel.setFont( new Font("SansSerif", Font.PLAIN, 20));
         locationLabel.setForeground(Color.WHITE);
         locationField = new JTextField();
         locationField.setToolTipText("Enter the location of your travel destination");
@@ -108,7 +108,6 @@ public class PostBlog extends JPanel {
         add(imageUpload, gbc);
 
         JButton postButton = getPostButton();
-        postButton.setBackground(new Color(34, 139, 34));
         postButton.setForeground(Color.BLACK);
         postButton.setPreferredSize(new Dimension(150, 30));
 
@@ -158,7 +157,9 @@ public class PostBlog extends JPanel {
     }
 
     private JButton getPostButton() {
-        JButton postButton = new JButton("Post");
+        JButton postButton = new Button();
+        postButton.setText("Post");
+        postButton.setBackground(new Color(35, 163, 223));
         postButton.addActionListener(e -> {
             String title = titleField.getText();
             String location = locationField.getText();

@@ -1,7 +1,8 @@
 package dream_team.easy_travel.AdminPanel;
 
-import dream_team.easy_travel.DatabaseConnection.ConnectDB;
+import dream_team.easy_travel.DatabaseConnection.*;
 import dream_team.easy_travel.Easy_Travel;
+import dream_team.easy_travel.swing.Button;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -32,48 +33,61 @@ public class Dashboard extends JPanel {
 
         // Table for displaying data
         tableModel = new DefaultTableModel(
-                new Object[]{"ID", "User Name", "Restaurant Name", "Amount", "Transaction ID", "Booking Date", "Action"}, 0
+                new Object[]{"ID", "User Name", "Restaurant Name", "Amount", "Transaction ID", "Booking Date", "Status", "Action"}, 0
         );
         table = new JTable(tableModel) {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
-                if (column == 6) {
+                if (column == 7) {
                     return new ActionRenderer();
                 }
                 return super.getCellRenderer(row, column);
             }
+
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                if (column == 7) {
+                    return new ActionEditor(Dashboard.this);
+                }
+                return super.getCellEditor(row, column);
+            }
         };
 
-        table.getColumnModel().getColumn(6).setCellEditor(new ActionEditor(this));
-
-        table.setRowHeight(30);
+        table.setRowHeight(80);
         table.setFont(new Font("Arial", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
         table.getTableHeader().setBackground(new Color(135, 206, 250));
         table.getTableHeader().setForeground(Color.BLACK);
-        // Custom renderer for row styling
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(
-                    JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column
-            ) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (isSelected) {
-                    c.setBackground(new Color(173, 216, 230)); // Light blue for selected rows
-                } else if (row % 2 == 0) {
-                    c.setBackground(new Color(224, 255, 255)); // Light cyan for alternate rows
-                } else {
-                    c.setBackground(Color.WHITE); // White for other rows
-                }
-                c.setForeground(Color.BLACK); // Black text
-                setBorder(BorderFactory.createLineBorder(new Color(135, 206, 250))); // Add border around cells
-                return c;
-            }
-        };
 
-        // Apply renderer to all columns
-        for (int i = 0; i < table.getColumnCount(); i++) {
+        // Custom renderer for row styling
+      DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer() {
+    @Override
+    public Component getTableCellRendererComponent(
+            JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column
+    ) {
+        JTextArea textArea = new JTextArea(value != null ? value.toString() : "");
+        textArea.setWrapStyleWord(true);
+        textArea.setLineWrap(true);
+        textArea.setOpaque(true);
+        textArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        textArea.setBorder(BorderFactory.createLineBorder(new Color(135, 206, 250)));
+
+        if (isSelected) {
+            textArea.setBackground(new Color(173, 216, 230)); // Light blue for selected rows
+        } else if (row % 2 == 0) {
+            textArea.setBackground(new Color(224, 255, 255)); // Light cyan for alternate rows
+        } else {
+            textArea.setBackground(Color.WHITE); // White for other rows
+        }
+        textArea.setForeground(Color.BLACK); // Black text
+
+        return textArea;
+    }
+};
+        // Apply renderer to all columns except the action column
+        for (int i = 0; i < table.getColumnCount() - 1; i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+
         }
 
         JScrollPane scrollPane = new JScrollPane(table);
@@ -98,6 +112,7 @@ public class Dashboard extends JPanel {
                 double amount = rs.getDouble("amount");
                 String transactionId = rs.getString("transaction_id");
                 String bookingDate = rs.getString("booking_date");
+                String status = rs.getString("status");
 
                 String userQuery = "SELECT name FROM users WHERE id = ?";
                 PreparedStatement userStmt = connection.prepareStatement(userQuery);
@@ -106,7 +121,7 @@ public class Dashboard extends JPanel {
                 userRs.next();
                 String userName = userRs.getString("name");
 
-                tableModel.addRow(new Object[]{id, userName, restaurantName, amount, transactionId, bookingDate, "Pending"});
+                tableModel.addRow(new Object[]{id, userName, restaurantName, amount, transactionId, bookingDate, status, ""});
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -157,8 +172,20 @@ public class Dashboard extends JPanel {
     }
 
     private static class ActionRenderer extends JPanel implements TableCellRenderer {
+        private final JButton approveButton = new Button();
+        private final JButton declineButton = new Button();
+
         public ActionRenderer() {
             setLayout(new FlowLayout(FlowLayout.CENTER));
+
+            approveButton.setText("Approve");
+            declineButton.setText("Decline");
+
+            // Styling the buttons
+            approveButton.setBackground(new Color(50, 205, 50)); // Lime green for Approve
+            approveButton.setForeground(Color.WHITE);
+            declineButton.setBackground(new Color(255, 69, 0)); // Red for Decline
+            declineButton.setForeground(Color.WHITE);
         }
 
         @Override
@@ -167,11 +194,13 @@ public class Dashboard extends JPanel {
         ) {
             removeAll();
 
-            JButton approveButton = new JButton("Approve");
-            JButton declineButton = new JButton("Decline");
+            String status = (String) table.getValueAt(row, 6);
 
-            approveButton.setEnabled("Pending".equals(value));
-            declineButton.setEnabled("Pending".equals(value));
+            // Enable or disable buttons based on status
+            approveButton.setEnabled("Pending".equals(status));
+            declineButton.setEnabled("Approved".equals(status));
+            approveButton.setPreferredSize(new Dimension(100, 30));
+            declineButton.setPreferredSize(new Dimension(100, 30));
 
             add(approveButton);
             add(declineButton);
@@ -182,13 +211,24 @@ public class Dashboard extends JPanel {
 
     private static class ActionEditor extends AbstractCellEditor implements TableCellEditor {
         private final JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        private final JButton approveButton = new JButton("Approve");
-        private final JButton declineButton = new JButton("Decline");
+        private final JButton approveButton = new Button();
+        private final JButton declineButton = new Button();
         private final Dashboard dashboard;
         private int selectedRow;
 
         public ActionEditor(Dashboard dashboard) {
             this.dashboard = dashboard;
+
+            approveButton.setText("Approve");
+            declineButton.setText("Decline");
+            approveButton.setPreferredSize(new Dimension(100, 30));
+            declineButton.setPreferredSize(new Dimension(100, 30));
+
+            // Styling the buttons
+            approveButton.setBackground(new Color(50, 205, 50)); // Lime green for Approve
+            approveButton.setForeground(Color.WHITE);
+            declineButton.setBackground(new Color(255, 69, 0)); // Red for Decline
+            declineButton.setForeground(Color.WHITE);
 
             approveButton.addActionListener(e -> {
                 dashboard.approveSelectedBooking(dashboard.tableModel.getValueAt(selectedRow, 0));
@@ -207,8 +247,13 @@ public class Dashboard extends JPanel {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             selectedRow = row;
-            approveButton.setEnabled("Pending".equals(value));
-            declineButton.setEnabled("Pending".equals(value));
+
+            String status = (String) table.getValueAt(row, 6);
+
+            // Enable or disable buttons based on status
+            approveButton.setEnabled("Pending".equals(status));
+            declineButton.setEnabled("Approved".equals(status));
+
             return panel;
         }
 

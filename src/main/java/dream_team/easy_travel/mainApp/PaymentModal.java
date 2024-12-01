@@ -2,6 +2,7 @@ package dream_team.easy_travel.mainApp;
 
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
+import dream_team.easy_travel.swing.Button;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -37,7 +38,8 @@ public class PaymentModal extends JFrame {
         JTextField cardNumber = new JTextField();
         cardNumber.setBounds(165, 190, 150, 30);
         add(cardNumber);
-        JButton payButton = new JButton("Pay");
+        JButton payButton = new Button();
+        payButton.setText("Pay");
         payButton.setBounds(150, 270, 100, 30);
         add(payButton);
 
@@ -58,7 +60,7 @@ public class PaymentModal extends JFrame {
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
-                String query = "INSERT INTO bookedUsersPayment (user_id, restaurant_name, amount,transaction_id) VALUES (?, ?, ?,?)";
+                String query = "INSERT INTO bookedUsersPayment (user_id, restaurant_name, amount,transaction_id,status) VALUES (?, ?, ?,?,?)";
                 String getUserId = "SELECT id FROM users WHERE username = ?";
                 String transactionId = UUID.randomUUID().toString();
 
@@ -82,6 +84,7 @@ public class PaymentModal extends JFrame {
                     stmt.setString(2, restaurantName);
                     stmt.setString(3, restaurantPrice);
                     stmt.setString(4, transactionId);
+                    stmt.setString(5, "Pending");
                     stmt.executeUpdate();
                     JOptionPane.showMessageDialog(this, "Payment Successful");
                     this.dispose();

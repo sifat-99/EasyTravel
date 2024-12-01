@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 
 public class UploadRestaurants extends JDialog {
-
     // Components for the form
     private final JTextField titleField;
     private final JTextField restaurant1Field;
@@ -21,8 +20,6 @@ public class UploadRestaurants extends JDialog {
     private final JTextField price3Field;
     private final JTextField restaurant4Field;
     private final JTextField price4Field;
-    private final JButton submitButton;
-    private final JButton cancelButton;
 
     public UploadRestaurants(JFrame parent) {
         // Set modal properties
@@ -30,20 +27,8 @@ public class UploadRestaurants extends JDialog {
         setSize(500, 600);
         setLocationRelativeTo(parent);
 
-        // Gradient background panel
-        JPanel backgroundPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
-                Color gradientStart = new Color(173, 216, 230); // Light Blue
-                Color gradientEnd = new Color(240, 248, 255);  // Alice Blue
-                GradientPaint gradient = new GradientPaint(0, 0, gradientStart, 0, getHeight(), gradientEnd);
-                g2d.setPaint(gradient);
-                g2d.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        backgroundPanel.setLayout(null);
+        // Create a panel with gradient background
+        final JPanel backgroundPanel = getJPanel();
 
         // Form panel for better alignment
         JPanel formPanel = new JPanel();
@@ -87,8 +72,8 @@ public class UploadRestaurants extends JDialog {
         price4Field = new JTextField();
         price4Field.setBounds(270, 260, 200, 30);
 
-        submitButton = createStyledButton("Submit", new Color(50, 205, 50)); // Green button
-        cancelButton = createStyledButton("Cancel", new Color(220, 20, 60)); // Red button
+        JButton submitButton = createStyledButton("Submit", new Color(50, 205, 50)); // Green button
+        JButton cancelButton = createStyledButton("Cancel", new Color(220, 20, 60)); // Red button
 
         // Set bounds for the buttons
         submitButton.setBounds(50, 320, 100, 30);
@@ -183,6 +168,23 @@ public class UploadRestaurants extends JDialog {
                 dispose(); // Close the modal
             }
         });
+    }
+
+    private static JPanel getJPanel() {
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                Color gradientStart = new Color(173, 216, 230); // Light Blue
+                Color gradientEnd = new Color(240, 248, 255);  // Alice Blue
+                GradientPaint gradient = new GradientPaint(0, 0, gradientStart, 0, getHeight(), gradientEnd);
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        backgroundPanel.setLayout(null);
+        return backgroundPanel;
     }
 
     private JLabel createStyledLabel(String text) {

@@ -1,9 +1,7 @@
 package dream_team.easy_travel.mainApp;
-
-import dream_team.easy_travel.DatabaseConnection.ConnectDB;
+import dream_team.easy_travel.DatabaseConnection.*;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -15,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 
 public class Blog extends JPanel {
@@ -39,6 +35,10 @@ public class Blog extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLUE);
         this.app = app;
+
+        setOpaque(false);
+
+        Font lobsterFont = loadLobsterFont();
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(1200, 750));
@@ -91,7 +91,8 @@ public class Blog extends JPanel {
         });
         searchPanel.add(refreshButton, BorderLayout.WEST);
 
-        JButton uploadYourThoughts = new JButton("Upload Blog");
+        JButton uploadYourThoughts = new Button();
+        uploadYourThoughts.setText("Upload Post");
         uploadYourThoughts.setBounds(1000, 10, 150, 50);
         layeredPane.add(uploadYourThoughts, Integer.valueOf(2));
 
@@ -224,7 +225,7 @@ public class Blog extends JPanel {
 
         JTextArea descriptionLabel = new JTextArea();
         descriptionLabel.setText(description);
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        descriptionLabel.setFont(loadLobsterFont().deriveFont(14f));
         descriptionLabel.setForeground(Color.WHITE);
         descriptionLabel.setEditable(false);
         descriptionLabel.setOpaque(false);
@@ -304,7 +305,7 @@ public class Blog extends JPanel {
         buttonPanel.setOpaque(false);
         JButton viewButton = new Button();
         viewButton.setText("View more");
-        viewButton.setPreferredSize(new Dimension(80, 25)); // Make button smaller
+        viewButton.setPreferredSize(new Dimension(100, 40)); // Make button smaller
         viewButton.addActionListener(e -> app.showPanelWithID("showBlogPostDetails", id));
         buttonPanel.add(viewButton);
 
@@ -343,6 +344,14 @@ public class Blog extends JPanel {
         popupUploadDialogue.setAlwaysOnTop(true);
 
         return popupUploadDialogue;
+    }
+    private Font loadLobsterFont() {
+        try (InputStream is = getClass().getResourceAsStream("/Bangla.ttf")) {
+            return Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            return new Font("Arial", Font.PLAIN, 20); // Fallback font
+        }
     }
 
 

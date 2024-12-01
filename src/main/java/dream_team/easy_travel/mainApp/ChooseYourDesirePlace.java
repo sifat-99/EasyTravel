@@ -54,17 +54,6 @@ public class ChooseYourDesirePlace extends JPanel {
         searchField.addActionListener(e -> fetchPlacesWithRestaurants(searchField.getText().trim()));
         add(searchField);
 
-        // Upload Restaurants button
-        openModalButton = new Button();
-        openModalButton.setText("Upload Restaurants");
-        openModalButton.setBounds(980, 15, 200, 50);
-        openModalButton.setBackground(new Color(100, 149, 237)); // Cornflower Blue button
-        openModalButton.setForeground(Color.WHITE);
-        openModalButton.addActionListener(e -> {
-            UploadRestaurants uploadRestaurants = new UploadRestaurants(app.getFrame());
-            uploadRestaurants.setVisible(true);
-        });
-        add(openModalButton);
 
         JButton refreshButton = new Button();
         refreshButton.setText("Refresh");

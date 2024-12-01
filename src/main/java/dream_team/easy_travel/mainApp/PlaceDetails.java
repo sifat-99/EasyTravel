@@ -1,5 +1,5 @@
 package dream_team.easy_travel.mainApp;
-import dream_team.easy_travel.DatabaseConnection.ConnectDB;
+import dream_team.easy_travel.DatabaseConnection.*;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;
 import javax.swing.*;
@@ -7,6 +7,8 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,24 +24,7 @@ public class PlaceDetails extends JPanel {
         // Set layout and background
         setLayout(null);
         setOpaque(false);
-//        setBackground(new Color(240, 248, 255)); // Light blue background for a clean design
-
-        // Fetch and display blog details
         fetchBlogDetails(id,app);
-
-//        // Back button
-//        JButton backButton = new Button();
-//                backButton.setText("⬅ Back");
-//        backButton.setBounds(50, 500, 100, 30);
-//        backButton.setBackground(new Color(173, 216, 230)); // Soft blue button
-//        backButton.setBounds(50, 630, 100, 30);
-////        backButton.setFocusPainted(false);
-//        add(backButton);
-//
-//        backButton.addActionListener(e -> app.showPanel("places"));
-
-
-        // Start image carousel if images are loaded
         if (images != null && images.length > 0) {
             startImageCarousel();
         }
@@ -76,8 +61,8 @@ public class PlaceDetails extends JPanel {
                 // Display description
                 JTextPane descriptionArea = new JTextPane();
                 descriptionArea.setText(rs.getString("description"));
-                descriptionArea.setBounds(50, 90, 400, 600);
-                descriptionArea.setFont(new Font("Arial", Font.PLAIN, 14));
+                descriptionArea.setBounds(50, 90, 400, 550);
+                descriptionArea.setFont(loadLobsterFont().deriveFont(16f));
                 descriptionArea.setEditable(false);
 //                descriptionArea.setBackground(new Color(240, 248, 255));
                 descriptionArea.setOpaque(false);
@@ -113,7 +98,8 @@ public class PlaceDetails extends JPanel {
                   backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
                   add(backButton);
 
-                  backButton.addActionListener(e -> app.showPanel("Blog"));
+                  backButton.addActionListener(e -> app.showPanel("Blog")
+                  );
                 }
 
             }
@@ -143,5 +129,13 @@ public class PlaceDetails extends JPanel {
         GradientPaint gp = new GradientPaint(0, 0, color1, 0, height, color2);
         g2d.setPaint(gp);
         g2d.fillRect(0, 0, width, height);
+    }
+    private Font loadLobsterFont() {
+        try (InputStream is = getClass().getResourceAsStream("/Bangla.ttf")) {
+            return Font.createFont(Font.TRUETYPE_FONT, is);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            return new Font("Arial", Font.PLAIN, 20); // Fallback font
+        }
     }
 }

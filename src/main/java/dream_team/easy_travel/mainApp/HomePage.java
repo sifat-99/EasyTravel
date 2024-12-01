@@ -74,7 +74,8 @@ public class HomePage extends JPanel {
         }
 
         // Explore button setup
-        CustomButton exploreButton = new CustomButton("Explore", 30);
+        JButton exploreButton = new Button();
+        exploreButton.setText("Explore");
         exploreButton.setBounds(100, 410, 150, 50);
         overlayPanel.add(exploreButton);
 

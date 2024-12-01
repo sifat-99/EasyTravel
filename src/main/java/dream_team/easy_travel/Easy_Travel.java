@@ -1,5 +1,6 @@
 package dream_team.easy_travel;
 import dream_team.easy_travel.AdminPanel.Dashboard;
+import dream_team.easy_travel.AdminPanel.RestaurantsUploadForAdmin;
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.mainApp.*;
 import javax.swing.*;
@@ -79,6 +80,7 @@ public final class Easy_Travel {
         contentPanel.add(new ChooseYourDesirePlace( this), "ChooseYourDesirePlace");
         try {
             contentPanel.add(new Dashboard(this),"AdminDashboard");
+            contentPanel.add(new RestaurantsUploadForAdmin(this),"uploadRestaurants");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -144,8 +146,8 @@ public final class Easy_Travel {
 
         // Create and style navigation buttons
         homeButton = createStyledButton("Home");
-        placeButton = createStyledButton("Places");
-        blogButton = createStyledButton("Blog");
+        placeButton = createStyledButton("Restaurants");
+        blogButton = createStyledButton("Blogs");
         postButton = createStyledButton("Post");
         aboutButton = createStyledButton("About");
         adminDashboardButton = createStyledButton("Admin Dashboard");
@@ -175,9 +177,23 @@ public final class Easy_Travel {
             updateFrameTitle("Home");
         });
         placeButton.addActionListener(e -> {
-            showPanel("ChooseYourDesirePlace");
-            updateButtonColors(placeButton);
-            updateFrameTitle("Place");
+            if(getLoggedInUser() == null){
+                showPanel("LoginRunner");
+                updateButtonColors(loginButton);
+                updateFrameTitle("Login");
+            }else{
+                if(getLoggedInUser().getUsername().equals("admin")){
+                    showPanel("uploadRestaurants");
+                    updateButtonColors(placeButton);
+                    updateFrameTitle("Upload Restaurants");
+                }else{
+                    showPanel("ChooseYourDesirePlace");
+                    updateButtonColors(placeButton);
+                    updateFrameTitle("Book your Restaurant");
+                }
+
+
+            }
         });
         blogButton.addActionListener(e -> {
             showPanel("Blog");
@@ -307,6 +323,7 @@ public final class Easy_Travel {
     public void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (contentPanel.getLayout());
         cl.show(contentPanel, panelName);
+        updateFrameTitle(panelName);
         if ("Blog".equals(panelName)) {
             refreshBlogPanel();
         }
