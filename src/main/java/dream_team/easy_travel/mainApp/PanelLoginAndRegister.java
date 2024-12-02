@@ -1,6 +1,8 @@
 package dream_team.easy_travel.mainApp;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -203,6 +205,15 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                 }
             };
             worker.execute();
+        });
+
+       // Add key binding for Enter key
+        txtPass.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "login");
+        txtPass.getActionMap().put("login", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cmd.doClick();
+            }
         });
     }
 

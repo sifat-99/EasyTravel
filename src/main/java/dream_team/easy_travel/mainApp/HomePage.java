@@ -468,6 +468,7 @@ public class HomePage extends JPanel {
         responses.put("budget-friendly road trips", "Drive through New Zealand or Scotland.");
         responses.put("default", "I'm still learning! How can I assist you today?");
         responses.put("bye", "Goodbye! Have a great day.");
+
         // Create JPopupMenu for suggestions
         JPopupMenu suggestionsMenu = new JPopupMenu();
 
@@ -547,8 +548,7 @@ public class HomePage extends JPanel {
 
 // Make suggestionsMenu dismissible with mouse clicks outside
         Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
-            if (event instanceof MouseEvent) {
-                MouseEvent mouseEvent = (MouseEvent) event;
+            if (event instanceof MouseEvent mouseEvent) {
                 if (mouseEvent.getID() == MouseEvent.MOUSE_PRESSED) {
                     if (!SwingUtilities.isDescendingFrom(mouseEvent.getComponent(), suggestionsMenu)) {
                         suggestionsMenu.setVisible(false);
@@ -565,8 +565,8 @@ public class HomePage extends JPanel {
 
 
 
-        // Add new chat bubbles
-        MessageAdder addMessage = (String sender, String message, boolean isUser) -> {
+            // Add new chat bubbles
+            MessageAdder addMessage = (String sender, String message, boolean isUser) -> {
             JPanel bubble = new JPanel();
             bubble.setBackground(isUser ? new Color(220, 248, 198) : new Color(240, 240, 240));
             bubble.setLayout(new BorderLayout());
@@ -578,7 +578,6 @@ public class HomePage extends JPanel {
             messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
             messageLabel.setForeground(Color.BLACK);
             bubble.add(messageLabel, BorderLayout.CENTER);
-
 
             JLabel timestampLabel = new JLabel(new SimpleDateFormat("hh:mm a").format(new Date()));
             timestampLabel.setFont(new Font("Arial", Font.ITALIC, 10));
@@ -631,10 +630,6 @@ public class HomePage extends JPanel {
             }
         });
     }
-
-
-
-
 
 
     // Load custom font for labels
