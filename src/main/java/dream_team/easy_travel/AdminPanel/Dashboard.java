@@ -21,13 +21,18 @@ public class Dashboard extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(240, 248, 255)); // Light background color
 
-        JLabel label = new JLabel("Admin Dashboard", JLabel.CENTER);
+        JButton label = new Button();
+        label.setText("Booking Requests");
         label.setFont(new Font("Arial", Font.BOLD, 18));
         label.setOpaque(true);
         label.setBackground(new Color(100, 149, 237)); // Cornflower Blue background
         label.setForeground(Color.WHITE);
         label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding around the label
         add(label, BorderLayout.NORTH);
+
+        label.addActionListener(e -> {
+            loadTableData();
+        });
 
         // Table for displaying data
         tableModel = new DefaultTableModel(

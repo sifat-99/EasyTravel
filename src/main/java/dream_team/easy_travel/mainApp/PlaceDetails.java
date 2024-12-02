@@ -59,19 +59,21 @@ public class PlaceDetails extends JPanel {
                 add(locationLabel);
 
                 // Display description
-                JTextPane descriptionArea = new JTextPane();
+                JTextArea descriptionArea = new JTextArea();
                 descriptionArea.setText(rs.getString("description"));
-                descriptionArea.setBounds(50, 90, 400, 550);
-                descriptionArea.setFont(loadLobsterFont().deriveFont(16f));
+                descriptionArea.setFont(loadLobsterFont().deriveFont(14f));
                 descriptionArea.setEditable(false);
-//                descriptionArea.setBackground(new Color(240, 248, 255));
                 descriptionArea.setOpaque(false);
-                // Justify text
-                StyledDocument doc = descriptionArea.getStyledDocument();
-                SimpleAttributeSet justify = new SimpleAttributeSet();
-                StyleConstants.setAlignment(justify, StyleConstants.ALIGN_LEFT);
-                doc.setParagraphAttributes(0, doc.getLength(), justify, false);
-                add(descriptionArea);
+                descriptionArea.setWrapStyleWord(true);
+                descriptionArea.setLineWrap(true);
+
+                // Add description area to a scroll pane
+                JScrollPane scrollPane = new JScrollPane(descriptionArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane.setBounds(50, 90, 400, 550);
+                scrollPane.setOpaque(false);
+                scrollPane.getViewport().setOpaque(false);
+                scrollPane.setBorder(null);
+                add(scrollPane);
 
                 // Load images
                 images = new ImageIcon[3];
