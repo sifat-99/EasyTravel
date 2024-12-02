@@ -492,43 +492,44 @@ public class HomePage extends JPanel {
             private void showSuggestions() {
                 String text = inputField.getText().trim().toLowerCase();
 
-                // Hide the suggestions menu if the input is empty
-                if (text.isEmpty()) {
-                    suggestionsMenu.setVisible(false);
-                    return;
-                }
-
-                // Filter responses for suggestions based on input string and limit to 3
+                // Filter responses for suggestions based on input string and limit to 10
                 java.util.List<String> filteredSuggestions = responses.keySet().stream()
                         .filter(s -> s.toLowerCase().startsWith(text)) // Match suggestions that start with the input text
                         .limit(10)
-                        .collect(Collectors.toList());
-
-                // If no suggestions, hide the menu
-                if (filteredSuggestions.isEmpty()) {
-                    suggestionsMenu.setVisible(false);
-                    return;
-                }
+                        .toList();
 
                 // Clear old suggestions and repopulate
                 suggestionsMenu.removeAll();
-                for (String suggestion : filteredSuggestions) {
-                    JMenuItem item = new JMenuItem(suggestion);
-                    item.setFont(new Font("Arial", Font.PLAIN, 14));
-                    item.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding for a smooth look
-                    item.addActionListener(e -> {
-                        inputField.setText(suggestion);
-                        suggestionsMenu.setVisible(false);
-                        inputField.requestFocusInWindow(); // Ensure the input field regains focus
-                    });
-                    suggestionsMenu.add(item);
+
+                if (!filteredSuggestions.isEmpty()) {
+                    for (String suggestion : filteredSuggestions) {
+                        JMenuItem item = new JMenuItem(suggestion);
+                        item.setFont(new Font("Arial", Font.PLAIN, 14));
+                        item.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding for a smooth look
+                        item.addActionListener(e -> {
+                            inputField.setText(suggestion); // Set the selected suggestion in the input field
+                            suggestionsMenu.setVisible(false); // Hide the suggestions menu
+                            inputField.requestFocusInWindow(); // Ensure the input field regains focus
+                            suggestionsMenu.removeAll(); // Clear suggestions after selection
+                        });
+                        suggestionsMenu.add(item);
+                    }
+                } else {
+                    JMenuItem noResults = new JMenuItem("No suggestions");
+                    noResults.setEnabled(false);
+                    noResults.setFont(new Font("Arial", Font.ITALIC, 14));
+                    noResults.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                    suggestionsMenu.add(noResults);
                 }
 
-                // Show the suggestions menu below the input field
                 // Calculate the position above the input field
                 int menuHeight = suggestionsMenu.getPreferredSize().height; // Height of the suggestions menu
                 int yPosition = -menuHeight; // Position the menu above the input field
+
+                // Show the suggestions menu
+                suggestionsMenu.pack();
                 suggestionsMenu.show(inputField, 0, yPosition);
+                suggestionsMenu.setVisible(true);
             }
         });
 
@@ -538,15 +539,15 @@ public class HomePage extends JPanel {
 // Add FocusListener to keep suggestions visible
         inputField.addFocusListener(new FocusAdapter() {
             @Override
-            public void focusLost(FocusEvent e) {
-                // Only hide the menu if focus is lost to something other than the menu
-                if (!suggestionsMenu.isVisible()) {
-                    suggestionsMenu.setVisible(false);
-                }
-            }
+                public void focusLost(FocusEvent e) {
+    // Only hide the menu if focus is lost to something other than the menu
+                if (e.getOppositeComponent() != null && !suggestionsMenu.isVisible() && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), suggestionsMenu)) {
+                suggestionsMenu.setVisible(false);
+    }
+}
         });
 
-// Make suggestionsMenu dismissible with mouse clicks outside
+        // Make suggestionsMenu dismissible with mouse clicks outside
         Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
             if (event instanceof MouseEvent mouseEvent) {
                 if (mouseEvent.getID() == MouseEvent.MOUSE_PRESSED) {
@@ -619,14 +620,22 @@ public class HomePage extends JPanel {
 
 
         // Add action listener for the button
-        sendButton.addActionListener(e -> sendMessage.run());
+        sendButton.addActionListener(e -> {
+            sendMessage.run();
+            suggestionsMenu.setVisible(false);
+            suggestionsMenu.removeAll();
+        });
 
         // Add key binding for Enter key
         inputField.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "send");
         inputField.getActionMap().put("send", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 sendMessage.run();
+                // Hide and clear the suggestions menu
+                suggestionsMenu.setVisible(false);
+                suggestionsMenu.removeAll();
             }
         });
     }
