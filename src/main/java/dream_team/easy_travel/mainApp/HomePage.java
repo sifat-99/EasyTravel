@@ -468,7 +468,7 @@ public class HomePage extends JPanel {
         responses.put("budget-friendly road trips", "Drive through New Zealand or Scotland.");
         responses.put("default", "I'm still learning! How can I assist you today?");
         responses.put("bye", "Goodbye! Have a great day.");
-// Create JPopupMenu for suggestions
+        // Create JPopupMenu for suggestions
         JPopupMenu suggestionsMenu = new JPopupMenu();
 
 // Add DocumentListener to the input field
