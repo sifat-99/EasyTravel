@@ -11,15 +11,17 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class HomePage extends JPanel {
 
@@ -202,6 +204,7 @@ public class HomePage extends JPanel {
         Map<String, String> responses = new HashMap<>();
         responses.put("hello", "Hi there! How can I help you with your travel plans?");
         responses.put("hi", "Hello! Ready to explore new destinations?");
+        responses.put("hii", "Hello! Ready to explore new destinations?");
         responses.put("hey", "Hey! Where are you planning to go?");
         responses.put("good morning", "Good morning! Let’s plan your next journey.");
         responses.put("good afternoon", "Good afternoon! Need help planning your trip?");
@@ -222,6 +225,7 @@ public class HomePage extends JPanel {
         responses.put("adventure", "Skydiving, white-water rafting, or safaris sound fun?");
         responses.put("relax", "Try a spa retreat in Iceland or Bali.");
         responses.put("luxury", "Consider an overwater villa in Bora Bora.");
+        responses.put("give me some suggestions", "Sure! What type of destination are you looking for?");
         responses.put("wildlife", "Visit Kruger National Park or the Galápagos Islands.");
         responses.put("family", "Disneyland, Legoland, or wildlife safaris are great!");
         responses.put("budget travel", "Affordable options include Vietnam or Eastern Europe.");
@@ -463,13 +467,103 @@ public class HomePage extends JPanel {
         responses.put("winter markets", "Explore Christmas markets in Vienna, Prague, or Strasbourg.");
         responses.put("budget-friendly road trips", "Drive through New Zealand or Scotland.");
         responses.put("default", "I'm still learning! How can I assist you today?");
-//        Updated hare for testing
-//        Again testing the update
+        responses.put("bye", "Goodbye! Have a great day.");
+// Create JPopupMenu for suggestions
+        JPopupMenu suggestionsMenu = new JPopupMenu();
+
+// Add DocumentListener to the input field
+        inputField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                showSuggestions();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                showSuggestions();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                showSuggestions();
+            }
+
+            private void showSuggestions() {
+                String text = inputField.getText().trim().toLowerCase();
+
+                // Hide the suggestions menu if the input is empty
+                if (text.isEmpty()) {
+                    suggestionsMenu.setVisible(false);
+                    return;
+                }
+
+                // Filter responses for suggestions based on input string and limit to 3
+                java.util.List<String> filteredSuggestions = responses.keySet().stream()
+                        .filter(s -> s.toLowerCase().startsWith(text)) // Match suggestions that start with the input text
+                        .limit(10)
+                        .collect(Collectors.toList());
+
+                // If no suggestions, hide the menu
+                if (filteredSuggestions.isEmpty()) {
+                    suggestionsMenu.setVisible(false);
+                    return;
+                }
+
+                // Clear old suggestions and repopulate
+                suggestionsMenu.removeAll();
+                for (String suggestion : filteredSuggestions) {
+                    JMenuItem item = new JMenuItem(suggestion);
+                    item.setFont(new Font("Arial", Font.PLAIN, 14));
+                    item.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding for a smooth look
+                    item.addActionListener(e -> {
+                        inputField.setText(suggestion);
+                        suggestionsMenu.setVisible(false);
+                        inputField.requestFocusInWindow(); // Ensure the input field regains focus
+                    });
+                    suggestionsMenu.add(item);
+                }
+
+                // Show the suggestions menu below the input field
+                // Calculate the position above the input field
+                int menuHeight = suggestionsMenu.getPreferredSize().height; // Height of the suggestions menu
+                int yPosition = -menuHeight; // Position the menu above the input field
+                suggestionsMenu.show(inputField, 0, yPosition);
+            }
+        });
+
+// Ensure the input field stays typeable while suggestions are visible
+        suggestionsMenu.setFocusable(false);
+
+// Add FocusListener to keep suggestions visible
+        inputField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                // Only hide the menu if focus is lost to something other than the menu
+                if (!suggestionsMenu.isVisible()) {
+                    suggestionsMenu.setVisible(false);
+                }
+            }
+        });
+
+// Make suggestionsMenu dismissible with mouse clicks outside
+        Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+            if (event instanceof MouseEvent) {
+                MouseEvent mouseEvent = (MouseEvent) event;
+                if (mouseEvent.getID() == MouseEvent.MOUSE_PRESSED) {
+                    if (!SwingUtilities.isDescendingFrom(mouseEvent.getComponent(), suggestionsMenu)) {
+                        suggestionsMenu.setVisible(false);
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
+
 
         @FunctionalInterface
         interface MessageAdder {
             void addMessage(String sender, String message, boolean isUser);
         }
+
+
 
         // Add new chat bubbles
         MessageAdder addMessage = (String sender, String message, boolean isUser) -> {

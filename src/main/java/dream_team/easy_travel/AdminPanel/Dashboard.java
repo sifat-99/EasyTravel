@@ -185,9 +185,9 @@ public class Dashboard extends JPanel {
             declineButton.setText("Decline");
 
             // Styling the buttons
-            approveButton.setBackground(new Color(50, 205, 50)); // Lime green for Approve
+            approveButton.setBackground(new Color(88, 213, 88)); // Lime green for Approve
             approveButton.setForeground(Color.WHITE);
-            declineButton.setBackground(new Color(255, 69, 0)); // Red for Decline
+            declineButton.setBackground(new Color(220, 87, 38)); // Red for Decline
             declineButton.setForeground(Color.WHITE);
         }
 
