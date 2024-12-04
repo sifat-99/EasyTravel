@@ -28,85 +28,151 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     }
 
     private void initRegister(Easy_Travel app) {
-        register.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
+        register.setLayout(null); // Disable layout manager
+
+        // Create Account Label
         JLabel label = new JLabel("Create Account");
         label.setFont(new Font("SansSerif", Font.BOLD, 30));
         label.setForeground(new Color(0, 0, 0));
+        label.setBounds(290, 200, 300, 50);
         register.add(label);
-        MyTextField txtUser = new MyTextField();
-        txtUser.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/user.png"), "Image not found: /com/raven/icon/user.png")));
-        txtUser.setHint("Name");
-        register.add(txtUser, "w 60%");
-        MyTextField txtEmail = new MyTextField();
-        txtEmail.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/mail.png"), "Image not found: /com/raven/icon/mail.png")));
-        txtEmail.setHint("Email");
-        register.add(txtEmail, "w 60%");
-        MyPasswordField txtPass = new MyPasswordField();
-        txtPass.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/pass.png"), "Image not found: /com/raven/icon/pass.png")));
-        txtPass.setHint("Password");
-        register.add(txtPass, "w 60%");
 
+        // Name TextField
+        MyTextField txtUser = new MyTextField();
+        txtUser.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/user.png"))));
+        txtUser.setHint("Name");
+        txtUser.setBounds(270, 270, 300, 50);
+        register.add(txtUser);
+
+        // Email TextField
+        MyTextField txtEmail = new MyTextField();
+        txtEmail.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/mail.png"))));
+        txtEmail.setHint("Username");
+       txtEmail.setToolTipText("Enter your unique username");
+        txtEmail.setBounds(270, 340, 300, 50);
+        register.add(txtEmail);
+
+        // Password TextField
+        MyPasswordField txtPass = new MyPasswordField();
+        txtPass.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/pass.png"))));
+        txtPass.setHint("Password");
+        txtPass.setToolTipText("Enter your password");
+        txtPass.setBounds(270, 410, 300, 50);
+        register.add(txtPass);
+
+        JLabel errorLabel = new JLabel();
+        errorLabel.setForeground(new Color(223, 42, 42));
+        errorLabel.setBounds(290, 460, 300, 20);
+        register.add(errorLabel);
+
+
+        // Sign Up Button
         Button cmd = new Button();
         cmd.setBackground(new Color(0, 0, 0));
         cmd.setForeground(new Color(250, 250, 250));
         cmd.setText("SIGN UP");
-        register.add(cmd, "w 40%, h 40");
+        cmd.setBounds(290, 500, 200, 50);
+        register.add(cmd);
+
+        // Action Listener for the Sign-Up Button
         cmd.addActionListener(e -> {
             String name = txtUser.getText();
             String username = txtEmail.getText();
             String password = new String(txtPass.getPassword());
             String encryptedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
             if (name.isEmpty() || username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields");
+                JOptionPane.showMessageDialog(register, "Please fill in all fields");
                 return;
             }
+
             ManageDatabase db = new ManageDatabase();
             try {
                 if (db.getUserByUsername(username) != null) {
-                    JOptionPane.showMessageDialog(this, "Username already exists");
+//                    JOptionPane.showMessageDialog(register, "Username already exists");
+                    errorLabel.setText("Username already exists");
+                    return;
+                }
+                if(!username.matches("^[a-zA-Z0-9._-]{3,}$")){
+//                    JOptionPane.showMessageDialog(register, "Username must be at least 3 characters long and can only contain letters, numbers, underscores and hyphens");
+                    return;
+                }
+                if(!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$")){
+//                    JOptionPane.showMessageDialog(register, "Password must be at least 8 characters long and contain at least one digit, one uppercase letter, one lowercase letter, one special character and no whitespace");
+                    if(password.length() < 8){
+                        errorLabel.setText("Password must be at least 8 characters long");
+                    }
+                    if(!password.matches(".*[0-9].*")){
+                        errorLabel.setText("Password must contain at least one digit");
+                    }
+                    if(!password.matches(".*[a-z].*")){
+                        errorLabel.setText("Password must contain at least one lowercase letter");
+                    }
+                    if(!password.matches(".*[A-Z].*")){
+                        errorLabel.setText("Password must contain at least one uppercase letter");
+                    }
+                    if(!password.matches(".*[@#$%^&+=].*")){
+                        errorLabel.setText("Password must contain at least one special character");
+                    }
+                    if(password.matches(".*\\s.*")){
+                        errorLabel.setText("Password must not contain any whitespace");
+                    }
                     return;
                 }
                 db.addNewUser(name, username, encryptedPassword);
-                JOptionPane.showMessageDialog(this, "User created successfully, Please login");
+                JOptionPane.showMessageDialog(register, "User created successfully, Please login");
                 register.setVisible(false);
                 login.setVisible(true);
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
         });
-
     }
 
     private void initLogin(Easy_Travel app) {
-        login.setLayout(new MigLayout("wrap", "push[center]push", "push[]25[]10[]10[]25[]push"));
+        login.setLayout(null); // Disable layout managers
+
+        // Sign In Label
         JLabel label = new JLabel("Sign In");
         label.setFont(new Font("SansSerif", Font.BOLD, 30));
         label.setForeground(new Color(9, 9, 9));
+        label.setBounds(320, 245, 200, 50);
         login.add(label);
 
+        // Email TextField
         MyTextField txtEmail = new MyTextField();
-        txtEmail.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/mail.png"), "Image not found: /mail.png")));
-        txtEmail.setHint("Email");
-        login.add(txtEmail, "w 60%");
+        txtEmail.setHint("Username");
+        txtEmail.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1)); // Add border
+        txtEmail.setBorder(BorderFactory.createCompoundBorder(txtEmail.getBorder(), BorderFactory.createEmptyBorder(0, 10, 0, 0))); // Add padding
+        txtEmail.setBounds(290, 340, 200, 50);
+        login.add(txtEmail);
 
-        JPanel passwordPanel = new JPanel(new MigLayout("insets 0", "[grow,fill][]", "[]"));
+        // Password Panel
+        JPanel passwordPanel = new JPanel(null); // Disable layout manager for panel
         passwordPanel.setBackground(Color.WHITE);
+        passwordPanel.setBounds(290, 397, 200, 50);
+        passwordPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1)); // Add border
 
         MyPasswordField txtPass = new MyPasswordField();
-        txtPass.setPrefixIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/pass.png"), "Image not found: /pass.png")));
         txtPass.setHint("Password");
-        passwordPanel.add(txtPass, "w 90%");
+        txtPass.setBounds(5, 5, 160, 40); // Relative to the panel
+        txtPass.setOpaque(false); // Make the password field transparent
+        passwordPanel.add(txtPass);
 
-        ImageIcon eyeOpenIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/eyeOpen.png"), "Image not found: /eyeOpen.png")).getImage().getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH));
-        ImageIcon eyeClosedIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/eyeClosed.png"), "Image not found: /eyeClosed.png")).getImage().getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH));
-        JButton btn = new JButton(eyeClosedIcon);
+        ImageIcon eyeOpenIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/eyeOpen.png"))).getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH));
+        ImageIcon eyeClosedIcon = new ImageIcon(new ImageIcon(Objects.requireNonNull(getClass().getResource("/eyeClosed.png"))).getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH));
+        JButton btn = new Button();
+        btn.setIcon(eyeClosedIcon);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
-        passwordPanel.add(btn, "w 10%");
+        btn.setBounds(160, 5, 40, 40); // Relative to the panel
+        btn.setOpaque(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        passwordPanel.add(btn);
 
-        login.add(passwordPanel, "w 60%");
+        login.add(passwordPanel);
 
+        // Password visibility toggle
         btn.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -121,42 +187,27 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             }
         });
 
+        // Forgot Password Button
         JButton cmdForget = new JButton("Forgot your password ?");
         cmdForget.setForeground(new Color(100, 100, 100));
         cmdForget.setFont(new Font("SansSerif", Font.BOLD, 12));
         cmdForget.setContentAreaFilled(false);
         cmdForget.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        cmdForget.setBounds(290, 470, 200, 30);
         login.add(cmdForget);
 
-        cmdForget.addActionListener(e ->{
+        cmdForget.addActionListener(e -> {
             JDialog popupForgotDialogue = createPopupForgotDialogue(app);
-            SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override
-                protected Void doInBackground() {
-                    try {
-                        SwingUtilities.invokeLater(() -> popupForgotDialogue.setVisible(true));
-//                        Thread.sleep(500);
-                        //                            JOptionPane.showMessageDialog(null, "Please contact the admin to reset your password");
-//                        SwingUtilities.invokeLater(popupForgotDialogue::dispose);
-                    } catch (Exception ex) {
-                        System.err.println(ex);
-                    } finally {
-                        SwingUtilities.invokeLater(() -> {
-                            //                                Thread.sleep(500);
-                            //                            popupForgotDialogue.dispose();
-                        });
-                    }
-                    return null;
-                }
-            };
-            worker.execute();
+            SwingUtilities.invokeLater(() -> popupForgotDialogue.setVisible(true));
         });
 
+        // Sign In Button
         Button cmd = new Button();
         cmd.setBackground(new Color(0, 0, 0));
         cmd.setForeground(new Color(250, 250, 250));
         cmd.setText("SIGN IN");
-        login.add(cmd, "w 40%, h 40");
+        cmd.setBounds(280, 570, 200, 50);
+        login.add(cmd);
 
         cmd.addActionListener(e -> {
             JDialog loadingDialog = createLoadingDialog(app);
@@ -173,7 +224,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
                             ManageDatabase db = new ManageDatabase();
                             User user = db.getUserByUsername(username);
 
-                            if ( BCrypt.checkpw(password, user.getPassword())) {
+                            if (BCrypt.checkpw(password, user.getPassword())) {
                                 Thread.sleep(500);
                                 SwingUtilities.invokeLater(() -> {
                                     loadingDialog.dispose();
@@ -207,7 +258,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             worker.execute();
         });
 
-       // Add key binding for Enter key
+        // Key Binding for Enter Key
         txtPass.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "login");
         txtPass.getActionMap().put("login", new AbstractAction() {
             @Override
@@ -216,6 +267,7 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
             }
         });
     }
+
 
     private JDialog createLoadingDialog(Easy_Travel app) {
         JFrame parentFrame = app.getFrame();
@@ -317,62 +369,59 @@ public class PanelLoginAndRegister extends javax.swing.JLayeredPane {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        login = new javax.swing.JPanel();
-        register = new javax.swing.JPanel();
+        login = new ImagePanel("/login.png");
+        register = new ImagePanel("/signUp.jpg");
 
         setLayout(new java.awt.CardLayout());
 
-       login = new GradientPanel(new Color(35, 163, 223), new Color(90, 236, 127));
-
+        // Layout for login panel
         javax.swing.GroupLayout loginLayout = new javax.swing.GroupLayout(login);
         login.setLayout(loginLayout);
         loginLayout.setHorizontalGroup(
-            loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
+                loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 327, Short.MAX_VALUE)
         );
         loginLayout.setVerticalGroup(
-            loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+                loginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 300, Short.MAX_VALUE)
         );
 
         add(login, "card3");
 
-        register = new GradientPanel(new Color(35, 163, 223), new Color(90, 236, 127));
-
+        // Layout for register panel
         javax.swing.GroupLayout registerLayout = new javax.swing.GroupLayout(register);
         register.setLayout(registerLayout);
         registerLayout.setHorizontalGroup(
-            registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
+                registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 327, Short.MAX_VALUE)
         );
         registerLayout.setVerticalGroup(
-            registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+                registerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 300, Short.MAX_VALUE)
         );
 
         add(register, "card2");
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
-    public static class GradientPanel extends JPanel {
-        private final Color color1;
-        private final Color color2;
+    // Custom JPanel for displaying an image as the background
+    public static class ImagePanel extends JPanel {
+        private final Image backgroundImage;
 
-        public GradientPanel(Color color1, Color color2) {
-            this.color1 = color1;
-            this.color2 = color2;
+        public ImagePanel(String imagePath) {
+            // Load the image
+            this.backgroundImage = new ImageIcon(Objects.requireNonNull(getClass().getResource(imagePath))).getImage();
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g;
-            int width = getWidth();
-            int height = getHeight();
-            GradientPaint gp = new GradientPaint(0, 0, color1, 0, height, color2);
-            g2d.setPaint(gp);
-            g2d.fillRect(0, 0, width, height);
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
         }
     }
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel login;

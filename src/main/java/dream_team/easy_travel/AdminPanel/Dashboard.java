@@ -2,6 +2,8 @@ package dream_team.easy_travel.AdminPanel;
 import dream_team.easy_travel.DatabaseConnection.*;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;
+import dream_team.easy_travel.swing.MyTextField;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -18,26 +20,40 @@ public class Dashboard extends JPanel {
     private final DefaultTableModel tableModel;
 
     public Dashboard(Easy_Travel easyTravel) throws SQLException {
-        setLayout(new BorderLayout());
+        setLayout(null);
         setBackground(new Color(240, 248, 255)); // Light background color
 
         JButton label = new Button();
         label.setText("Booking Requests");
         label.setFont(new Font("Arial", Font.BOLD, 18));
-        label.setOpaque(true);
+        label.setBounds(300, 20, 200, 50);
+        label.setOpaque(false); // Transparent background
         label.setBackground(new Color(100, 149, 237)); // Cornflower Blue background
         label.setForeground(Color.WHITE);
         label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Padding around the label
         add(label, BorderLayout.NORTH);
 
-        label.addActionListener(e -> {
-            loadTableData();
-        });
+        JTextField searchField = new MyTextField();
+        searchField.setBounds(550, 20, 200, 50);
+        searchField.setBorder(BorderFactory.createLineBorder(new Color(47, 103, 198), 2, true));
+        searchField.setBorder(BorderFactory.createCompoundBorder(searchField.getBorder(), BorderFactory.createEmptyBorder(5, 5, 5, 5))); // Padding inside the text field
+        add(searchField);
+
+        JButton searchButton = new Button();
+        searchButton.setText("Search");
+        searchButton.setBounds(770, 20, 100, 50);
+        searchButton.addActionListener(e -> searchTableData(searchField.getText()));
+        add(searchButton);
+
 
         // Table for displaying data
         tableModel = new DefaultTableModel(
                 new Object[]{"ID", "User Name", "Restaurant Name", "Amount", "Transaction ID", "Booking Date", "Status", "Action"}, 0
         );
+        label.addActionListener(e -> {
+            tableModel.setRowCount(0); // Clear existing rows
+            loadTableData(); // Reload data into the table
+        });
         table = new JTable(tableModel) {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
@@ -93,7 +109,10 @@ public class Dashboard extends JPanel {
 
         }
 
+
+
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(50, 100, 1100, 500);
         add(scrollPane, BorderLayout.CENTER);
 
         // Load data into the table
@@ -257,4 +276,41 @@ public class Dashboard extends JPanel {
             return null;
         }
     }
+
+
+private void searchTableData(String query) {
+    tableModel.setRowCount(0); // Clear existing rows
+    try {
+        Connection connection = ConnectDB.getConnection();
+        String sql = "SELECT * FROM bookedUsersPayment WHERE " +
+                     "restaurant_name LIKE ? OR transaction_id LIKE ? OR status LIKE ?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        String searchQuery = "%" + query + "%";
+        stmt.setString(1, searchQuery);
+        stmt.setString(2, searchQuery);
+        stmt.setString(3, searchQuery);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            int userId = rs.getInt("user_id");
+            String restaurantName = rs.getString("restaurant_name");
+            double amount = rs.getDouble("amount");
+            String transactionId = rs.getString("transaction_id");
+            String bookingDate = rs.getString("booking_date");
+            String status = rs.getString("status");
+
+            String userQuery = "SELECT name FROM users WHERE id = ?";
+            PreparedStatement userStmt = connection.prepareStatement(userQuery);
+            userStmt.setInt(1, userId);
+            ResultSet userRs = userStmt.executeQuery();
+            userRs.next();
+            String userName = userRs.getString("name");
+
+            tableModel.addRow(new Object[]{id, userName, restaurantName, amount, transactionId, bookingDate, status, ""});
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
 }

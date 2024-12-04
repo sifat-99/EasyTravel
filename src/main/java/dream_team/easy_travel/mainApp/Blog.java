@@ -122,7 +122,11 @@ public class Blog extends JPanel {
         scrollPane.getVerticalScrollBar().setUI(createCustomScrollBarUI());
         scrollPane.getHorizontalScrollBar().setUI(createCustomScrollBarUI());
 
-        layeredPane.add(scrollPane, Integer.valueOf(20));
+
+        // Enable smooth scrolling
+        enableSmoothScrolling(scrollPane);
+
+        layeredPane.add(scrollPane, Integer.valueOf(15));
 
         add(layeredPane, BorderLayout.CENTER);
     }
@@ -353,6 +357,33 @@ public class Blog extends JPanel {
             return new Font("Arial", Font.PLAIN, 20); // Fallback font
         }
     }
+
+    private void enableSmoothScrolling(JScrollPane scrollPane) {
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Adjust scrolling speed
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+
+        scrollPane.addMouseWheelListener(e -> {
+            JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+            int scrollAmount = e.getUnitsToScroll() * verticalBar.getUnitIncrement();
+            Timer smoothScrollTimer = new Timer(5, null); // 5ms for smooth effect
+            smoothScrollTimer.addActionListener(new ActionListener() {
+                int remaining = scrollAmount;
+
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    if (remaining == 0) {
+                        smoothScrollTimer.stop();
+                    } else {
+                        int step = Math.min(remaining, verticalBar.getUnitIncrement());
+                        verticalBar.setValue(verticalBar.getValue() + step);
+                        remaining -= step;
+                    }
+                }
+            });
+            smoothScrollTimer.start();
+        });
+    }
+
 
 
 
