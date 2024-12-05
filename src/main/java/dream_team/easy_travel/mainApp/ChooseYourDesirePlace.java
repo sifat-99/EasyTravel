@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.EventObject;
+import java.util.Objects;
 
 public class ChooseYourDesirePlace extends JPanel {
     private Easy_Travel app;
@@ -28,24 +29,17 @@ public class ChooseYourDesirePlace extends JPanel {
         fetchPlacesWithRestaurants(""); // Initially fetch all places
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
+@Override
+protected void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    Graphics2D g2d = (Graphics2D) g;
 
-        // Define the gradient colors
-        Color startColor = new Color(135, 206, 250); // Light Sky Blue
-        Color endColor = new Color(70, 130, 180); // Steel Blue
+    // Load the background image
+    Image backgroundImage = new ImageIcon(Objects.requireNonNull(getClass().getResource("/signUp.jpg"))).getImage();
 
-        // Create a gradient from top to bottom
-        int width = getWidth();
-        int height = getHeight();
-        GradientPaint gradient = new GradientPaint(0, 0, startColor, 0, height, endColor);
-
-        // Fill the background with the gradient
-        g2d.setPaint(gradient);
-        g2d.fillRect(0, 0, width, height);
-    }
+    // Draw the background image
+    g2d.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+}
 
     private void initializeComponents(Easy_Travel app) {
         // Search field
@@ -57,7 +51,7 @@ public class ChooseYourDesirePlace extends JPanel {
 
         JButton refreshButton = new Button();
         refreshButton.setText("Refresh");
-        refreshButton.setBounds(800, 15, 100, 50);
+        refreshButton.setBounds(1000, 15, 100, 50);
         refreshButton.setBackground(new Color(100, 149, 237)); // Cornflower Blue button
         refreshButton.setForeground(Color.WHITE);
         refreshButton.addActionListener(e -> fetchPlacesWithRestaurants(""));
