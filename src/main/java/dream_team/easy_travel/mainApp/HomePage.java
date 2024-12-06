@@ -12,6 +12,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -315,8 +316,7 @@ public class HomePage extends JPanel {
             bubble.setLayout(new BorderLayout());
             bubble.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
             bubble.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
-            bubble.setBorder(new RoundedBorder(10)); // Rounded corners
-
+            bubble.setBorder(new RoundedBorder(10));
             JLabel messageLabel = new JLabel("<html><body style='width: 200px;'><b>" + sender + ":</b> " + message + "</body></html>");
             messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
             messageLabel.setForeground(Color.BLACK);
@@ -396,6 +396,7 @@ public class HomePage extends JPanel {
             return null;
         }
     }
+    @org.jetbrains.annotations.NotNull
     private Map<String, String> fetchResponsesFromDatabase() {
         Map<String, String> responses = new HashMap<>();
         String query = "SELECT keyword, response FROM chatbot_responses";
