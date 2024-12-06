@@ -47,7 +47,7 @@ public class PaymentModal extends JFrame {
         payButton.addActionListener(e -> {
             if(app.getLoggedInUser() == null){
                 JOptionPane.showMessageDialog(this, "Please login first");
-                return;
+                app.showPanel("LoginRunner");
             }
             if(cardNumber.getText().isEmpty()){
                 JOptionPane.showMessageDialog(this, "Please enter card number");
