@@ -212,6 +212,7 @@ public class HomePage extends JPanel {
         // Chatbot responses
         Map<String, String> responses = fetchResponsesFromDatabase();
 
+
         // Create JPopupMenu for suggestions
         JPopupMenu suggestionsMenu = new JPopupMenu();
 
