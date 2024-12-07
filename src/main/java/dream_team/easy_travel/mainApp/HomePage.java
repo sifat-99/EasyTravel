@@ -1,5 +1,7 @@
 package dream_team.easy_travel.mainApp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import chatBot.ChatbotResponse;
 import dream_team.easy_travel.DatabaseConnection.ConnectDB;
 import dream_team.easy_travel.Easy_Travel;
 import dream_team.easy_travel.swing.Button;
@@ -12,9 +14,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.InputStream;
@@ -27,7 +26,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
+import static chatBot.ChatbotIntegration.generateCompletion;
 
 public class HomePage extends JPanel {
 
@@ -209,100 +209,6 @@ public class HomePage extends JPanel {
         chatbotFrame.add(mainPanel);
         chatbotFrame.setVisible(true);
 
-        // Chatbot responses
-        Map<String, String> responses = fetchResponsesFromDatabase();
-
-
-        // Create JPopupMenu for suggestions
-        JPopupMenu suggestionsMenu = new JPopupMenu();
-
-// Add DocumentListener to the input field
-        inputField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                showSuggestions();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                showSuggestions();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                showSuggestions();
-            }
-
-            private void showSuggestions() {
-                String text = inputField.getText().trim().toLowerCase();
-
-                // Filter responses for suggestions based on input string and limit to 10
-                java.util.List<String> filteredSuggestions = responses.keySet().stream()
-                        .filter(s -> s.toLowerCase().startsWith(text)) // Match suggestions that start with the input text
-                        .limit(10)
-                        .toList();
-
-                // Clear old suggestions and repopulate
-                suggestionsMenu.removeAll();
-
-                if (!filteredSuggestions.isEmpty()) {
-                    for (String suggestion : filteredSuggestions) {
-                        JMenuItem item = new JMenuItem(suggestion);
-                        item.setFont(new Font("Arial", Font.PLAIN, 14));
-                        item.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Add padding for a smooth look
-                        item.addActionListener(e -> {
-                            inputField.setText(suggestion); // Set the selected suggestion in the input field
-                            suggestionsMenu.setVisible(false); // Hide the suggestions menu
-                            inputField.requestFocusInWindow(); // Ensure the input field regains focus
-                            suggestionsMenu.removeAll(); // Clear suggestions after selection
-                        });
-                        suggestionsMenu.add(item);
-                    }
-                } else {
-                    JMenuItem noResults = new JMenuItem("No suggestions");
-                    noResults.setEnabled(false);
-                    noResults.setFont(new Font("Arial", Font.ITALIC, 14));
-                    noResults.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-                    suggestionsMenu.add(noResults);
-                }
-
-                // Calculate the position above the input field
-                int menuHeight = suggestionsMenu.getPreferredSize().height; // Height of the suggestions menu
-                int yPosition = -menuHeight; // Position the menu above the input field
-
-                // Show the suggestions menu
-                suggestionsMenu.pack();
-                suggestionsMenu.show(inputField, 0, yPosition);
-                suggestionsMenu.setVisible(true);
-            }
-        });
-
-// Ensure the input field stays typeable while suggestions are visible
-        suggestionsMenu.setFocusable(false);
-
-// Add FocusListener to keep suggestions visible
-        inputField.addFocusListener(new FocusAdapter() {
-            @Override
-                public void focusLost(FocusEvent e) {
-    // Only hide the menu if focus is lost to something other than the menu
-                if (e.getOppositeComponent() != null && !suggestionsMenu.isVisible() && !SwingUtilities.isDescendingFrom(e.getOppositeComponent(), suggestionsMenu)) {
-                suggestionsMenu.setVisible(false);
-    }
-}
-        });
-
-        // Make suggestionsMenu dismissible with mouse clicks outside
-        Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
-            if (event instanceof MouseEvent mouseEvent) {
-                if (mouseEvent.getID() == MouseEvent.MOUSE_PRESSED) {
-                    if (!SwingUtilities.isDescendingFrom(mouseEvent.getComponent(), suggestionsMenu)) {
-                        suggestionsMenu.setVisible(false);
-                    }
-                }
-            }
-        }, AWTEvent.MOUSE_EVENT_MASK);
-
-
         @FunctionalInterface
         interface MessageAdder {
             void addMessage(String sender, String message, boolean isUser);
@@ -346,27 +252,87 @@ public class HomePage extends JPanel {
 
 
         // Action logic for sending messages
+//        Runnable sendMessage = () -> {
+//            String message = inputField.getText().trim();
+//
+//           String loggedInUser = (app.getLoggedInUser() != null) ? app.getLoggedInUser().getName() : "Guest";
+//
+//            if (!message.isEmpty()) {
+//                addMessage.addMessage(loggedInUser, message, true); // User message
+//                inputField.setText("");
+//
+//                // Generate a response
+//                String response = responses.getOrDefault(message.toLowerCase(), responses.get("default"));
+//                addMessage.addMessage("Bot", response, false); // Bot response
+//            }
+//        };
         Runnable sendMessage = () -> {
-            String message = inputField.getText().trim();
+            String message = inputField.getText().trim() ;
 
-           String loggedInUser = (app.getLoggedInUser() != null) ? app.getLoggedInUser().getName() : "Guest";
+            String loggedInUser = (app.getLoggedInUser() != null) ? app.getLoggedInUser().getName() : "Guest";
 
             if (!message.isEmpty()) {
                 addMessage.addMessage(loggedInUser, message, true); // User message
                 inputField.setText("");
 
-                // Generate a response
-                String response = responses.getOrDefault(message.toLowerCase(), responses.get("default"));
-                addMessage.addMessage("Bot", response, false); // Bot response
+                // Add "Bot is typing..."
+                JPanel typingBubble = new JPanel();
+                typingBubble.setBackground(new Color(240, 240, 240));
+                typingBubble.setLayout(new BorderLayout());
+                typingBubble.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                typingBubble.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
+                typingBubble.setBorder(new RoundedBorder(10));
+                JLabel typingLabel = new JLabel("Bot is thinking...");
+                typingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+                typingLabel.setForeground(Color.GRAY);
+                typingBubble.add(typingLabel, BorderLayout.CENTER);
+
+                JPanel alignmentWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                alignmentWrapper.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
+                alignmentWrapper.add(typingBubble);
+
+                chatArea.add(alignmentWrapper);
+                chatArea.revalidate();
+                chatArea.repaint();
+
+                // Scroll to the bottom of the chat area
+                SwingUtilities.invokeLater(() -> {
+                    JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                    vertical.setValue(vertical.getMaximum());
+                });
+
+                // Fetch the bot's response in a new thread to avoid blocking the UI
+                new Thread(() -> {
+                    try {
+                        // Simulate a delay to show "Bot is typing..."
+                        Thread.sleep(1000); // Optional: Simulate typing delay
+
+                        String model = "llama3.2:1b"; // Ensure this model is available on the server
+                        String response = generateCompletion(model, message + " in 15 words", null, null, null, null, null, null, false, false, null, null);
+
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        ChatbotResponse chatbotResponse = objectMapper.readValue(response, ChatbotResponse.class);
+
+                        // Replace "Bot is typing..." with the actual response
+                        SwingUtilities.invokeLater(() -> {
+                            chatArea.remove(alignmentWrapper); // Remove the "Bot is typing..." message
+                            addMessage.addMessage("Bot", chatbotResponse.getResponse(), false); // Add the bot's actual response
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         };
+
 
 
         // Add action listener for the button
         sendButton.addActionListener(e -> {
             sendMessage.run();
-            suggestionsMenu.setVisible(false);
-            suggestionsMenu.removeAll();
+//            suggestionsMenu.setVisible(false);
+//            suggestionsMenu.removeAll();
         });
 
         // Add key binding for Enter key
@@ -377,8 +343,8 @@ public class HomePage extends JPanel {
 
                 sendMessage.run();
                 // Hide and clear the suggestions menu
-                suggestionsMenu.setVisible(false);
-                suggestionsMenu.removeAll();
+//                suggestionsMenu.setVisible(false);
+//                suggestionsMenu.removeAll();
             }
         });
     }
