@@ -170,7 +170,7 @@ public class UploadRestaurants extends JDialog {
         });
     }
 
-    private static JPanel getJPanel() {
+    public static JPanel getJPanel() {
         JPanel backgroundPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {

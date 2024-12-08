@@ -33,6 +33,7 @@ public class ManageDatabase {
             if (rs.next()) {
                 // Return a new User object with the retrieved username and password
                 return new User(
+                        rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("username"),
                         rs.getString("password"));

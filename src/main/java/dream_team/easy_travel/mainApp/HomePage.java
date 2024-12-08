@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static chatBot.ChatbotIntegration.generateCompletion;
+import static dream_team.easy_travel.AdminPanel.UploadRestaurants.getJPanel;
 
 public class HomePage extends JPanel {
 
@@ -93,7 +94,7 @@ public class HomePage extends JPanel {
         // Action listener for button
         exploreButton.addActionListener(e -> app.showPanel("Blog"));
 
-        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/chat.png")));
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Question.png")));
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         icon = new ImageIcon(img);
 
@@ -267,13 +268,20 @@ public class HomePage extends JPanel {
 //            }
 //        };
         Runnable sendMessage = () -> {
-            String message = inputField.getText().trim() ;
+            String message = inputField.getText().trim();
 
             String loggedInUser = (app.getLoggedInUser() != null) ? app.getLoggedInUser().getName() : "Guest";
+            int loggedInUserId = (app.getLoggedInUser() != null) ? app.getLoggedInUser().getId() : 0;
 
             if (!message.isEmpty()) {
                 addMessage.addMessage(loggedInUser, message, true); // User message
                 inputField.setText("");
+
+
+
+
+                // Save user's message to the database
+                saveMessageToDatabase(loggedInUserId,loggedInUser, message, true);
 
                 // Add "Bot is typing..."
                 JPanel typingBubble = new JPanel();
@@ -282,10 +290,13 @@ public class HomePage extends JPanel {
                 typingBubble.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
                 typingBubble.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
                 typingBubble.setBorder(new RoundedBorder(10));
-                JLabel typingLabel = new JLabel("Bot is thinking...");
-                typingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-                typingLabel.setForeground(Color.GRAY);
-                typingBubble.add(typingLabel, BorderLayout.CENTER);
+//            ImageIcon typingIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Load.gif")));
+//            Image ImgS = typingIcon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH);
+//            typingIcon = new ImageIcon(ImgS);
+            JLabel typingLabel = new JLabel("Bot is typing...");
+            typingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+            typingLabel.setForeground(Color.GRAY);
+            typingBubble.add(typingLabel, BorderLayout.CENTER);
 
                 JPanel alignmentWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
                 alignmentWrapper.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
@@ -305,9 +316,9 @@ public class HomePage extends JPanel {
                 new Thread(() -> {
                     try {
                         // Simulate a delay to show "Bot is typing..."
-                        Thread.sleep(1000); // Optional: Simulate typing delay
+                        Thread.sleep(500); // Optional: Simulate typing delay
 
-                        String model = "llama3.2:1b"; // Ensure this model is available on the server
+                        String model = "llama3.2"; // Ensure this model is available on the server
                         String response = generateCompletion(model, message + " in 15 words", null, null, null, null, null, null, false, false, null, null);
 
                         ObjectMapper objectMapper = new ObjectMapper();
@@ -317,6 +328,9 @@ public class HomePage extends JPanel {
                         SwingUtilities.invokeLater(() -> {
                             chatArea.remove(alignmentWrapper); // Remove the "Bot is typing..." message
                             addMessage.addMessage("Bot", chatbotResponse.getResponse(), false); // Add the bot's actual response
+
+                            // Save bot's message to the database
+                            saveMessageToDatabase(loggedInUserId, "Bot", chatbotResponse.getResponse(), false);
                         });
 
                     } catch (Exception e) {
@@ -325,6 +339,7 @@ public class HomePage extends JPanel {
                 }).start();
             }
         };
+
 
 
 
@@ -378,7 +393,21 @@ public class HomePage extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return responses;
     }
+    public void saveMessageToDatabase(int loggedInUserId, String username, String message, boolean isUser) {
+        try (Connection connection = ConnectDB.getConnection()) { // Ensure DatabaseConnection is implemented
+            String sql = "INSERT INTO conversations (user_ID,username, message, sender_type, timestamp) VALUES (?,?, ?, ?, NOW())";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, loggedInUserId);
+                statement.setString(2, username);
+                statement.setString(3, message);
+                statement.setString(4, isUser ? "user" : "bot");
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
