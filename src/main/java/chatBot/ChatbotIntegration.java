@@ -1,5 +1,4 @@
 package chatBot;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -7,7 +6,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
-
 public class ChatbotIntegration {
 
     private static final String API_URL = "http://localhost:11434/api/generate";
@@ -77,18 +75,4 @@ public class ChatbotIntegration {
             return null;
         }
     }
-
-//    public static void main(String[] args) {
-//        String model = "llama3.2:1b"; // Ensure this model is available on the server
-//        String prompt = "what is travel? in 10 word";
-//        String response = generateCompletion(model, prompt, null, null, null, null, null, null, false, false, null, null);
-//        //System.out.println("Response: " + response);
-//        try {
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            ChatbotResponse chatbotResponse = objectMapper.readValue(response, ChatbotResponse.class);
-//            System.out.println("Response: " + chatbotResponse.getResponse());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
