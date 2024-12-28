@@ -37,13 +37,15 @@ public class HomePage extends JPanel {
         setLayout(null); // Use null layout to allow precise positioning
         setBackground(Color.BLACK); // Fallback color in case video fails to load
 
-        // Initialize JavaFX for video background
-        JFXPanel fxPanel = new JFXPanel();
-        fxPanel.setBounds(0, -100, 1400, 850);
-        add(fxPanel);
+        // Initialize JLabel for GIF background
+        JLabel gifLabel = new JLabel();
+        gifLabel.setBounds(0, -100, 1400, 850);
+        add(gifLabel);
 
-        // Load and play the video as background
-        SwingUtilities.invokeLater(() -> initFX(fxPanel));
+        // Load and display the GIF as background
+        SwingUtilities.invokeLater(() -> initGIF(gifLabel));
+
+
 
         // Set up custom font, with fallback to Arial if needed
         Font lobsterFont = loadFont();
@@ -57,7 +59,7 @@ public class HomePage extends JPanel {
         overlayPanel.setBackground(new Color(255, 255, 255, 0)); // Semi-transparent overlay
         overlayPanel.setLayout(null);
         overlayPanel.setOpaque(false); // Ensure transparency
-        fxPanel.add(overlayPanel);
+        gifLabel.add(overlayPanel);
 
         // Welcome text label
         JLabel textLabel = new JLabel("Welcome", SwingConstants.LEFT);
@@ -109,6 +111,12 @@ public class HomePage extends JPanel {
 
         // Chatbot popup
         chatbotButton.addActionListener(e -> showChatbot(app));
+    }
+    // Method to initialize and display the GIF
+    private void initGIF(JLabel gifLabel) {
+        ImageIcon gifIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/BG.gif"), "Image not found"));
+        gifIcon.setImage(gifIcon.getImage().getScaledInstance(1200, 750, Image.SCALE_DEFAULT));
+        gifLabel.setIcon(gifIcon);
     }
 
     // Initialize JavaFX video background
@@ -217,8 +225,8 @@ public class HomePage extends JPanel {
 
 
 
-            // Add new chat bubbles
-            MessageAdder addMessage = (String sender, String message, boolean isUser) -> {
+        // Add new chat bubbles
+        MessageAdder addMessage = (String sender, String message, boolean isUser) -> {
             JPanel bubble = new JPanel();
             bubble.setBackground(isUser ? new Color(220, 248, 198) : new Color(240, 240, 240));
             bubble.setLayout(new BorderLayout());
@@ -293,10 +301,10 @@ public class HomePage extends JPanel {
 //            ImageIcon typingIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Load.gif")));
 //            Image ImgS = typingIcon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH);
 //            typingIcon = new ImageIcon(ImgS);
-            JLabel typingLabel = new JLabel("Bot is typing...");
-            typingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-            typingLabel.setForeground(Color.GRAY);
-            typingBubble.add(typingLabel, BorderLayout.CENTER);
+                JLabel typingLabel = new JLabel("Bot is typing...");
+                typingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+                typingLabel.setForeground(Color.GRAY);
+                typingBubble.add(typingLabel, BorderLayout.CENTER);
 
                 JPanel alignmentWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
                 alignmentWrapper.setBackground(new Color(0, 0, 0, 0)); // Fully transparent background
@@ -318,8 +326,8 @@ public class HomePage extends JPanel {
                         // Simulate a delay to show "Bot is typing..."
                         Thread.sleep(500); // Optional: Simulate typing delay
 
-                        String model = "llama3.2"; // Ensure this model is available on the server
-                        String response = generateCompletion(model, message + " in 15 words", null, null, null, null, null, null, false, false, null, null);
+                        String model = "llama3.2:1b"; // Ensure this model is available on the server
+                        String response = generateCompletion(model, message + " in less than 15 words", null, null, null, null, null, null, false, false, null, null);
 
                         ObjectMapper objectMapper = new ObjectMapper();
                         ChatbotResponse chatbotResponse = objectMapper.readValue(response, ChatbotResponse.class);
