@@ -119,23 +119,6 @@ public class HomePage extends JPanel {
         gifLabel.setIcon(gifIcon);
     }
 
-    // Initialize JavaFX video background
-//    private void initFX(JFXPanel fxPanel) {
-//        String videoPath = Objects.requireNonNull(getClass().getResource("/background.mp4")).toExternalForm();
-//        Media media = new Media(videoPath);
-//        MediaPlayer mediaPlayer = new MediaPlayer(media);
-//        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop the video
-//
-//        MediaView mediaView = new MediaView(mediaPlayer);
-//        mediaView.setFitWidth(1400);
-//        mediaView.setFitHeight(850);
-//
-//        Group root = new Group(mediaView);
-//        Scene scene = new Scene(root, 1400, 850);
-//        fxPanel.setScene(scene);
-//        mediaPlayer.play();
-//    }
-
     // Chatbot logic
     private void showChatbot(Easy_Travel app) {
         JFrame chatbotFrame = new JFrame();
@@ -260,21 +243,7 @@ public class HomePage extends JPanel {
         };
 
 
-        // Action logic for sending messages
-//        Runnable sendMessage = () -> {
-//            String message = inputField.getText().trim();
-//
-//           String loggedInUser = (app.getLoggedInUser() != null) ? app.getLoggedInUser().getName() : "Guest";
-//
-//            if (!message.isEmpty()) {
-//                addMessage.addMessage(loggedInUser, message, true); // User message
-//                inputField.setText("");
-//
-//                // Generate a response
-//                String response = responses.getOrDefault(message.toLowerCase(), responses.get("default"));
-//                addMessage.addMessage("Bot", response, false); // Bot response
-//            }
-//        };
+
         Runnable sendMessage = () -> {
             String message = inputField.getText().trim();
 
@@ -298,9 +267,7 @@ public class HomePage extends JPanel {
                 typingBubble.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
                 typingBubble.setMaximumSize(new Dimension(300, Integer.MAX_VALUE));
                 typingBubble.setBorder(new RoundedBorder(10));
-//            ImageIcon typingIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/Load.gif")));
-//            Image ImgS = typingIcon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH);
-//            typingIcon = new ImageIcon(ImgS);
+
                 JLabel typingLabel = new JLabel("Bot is typing...");
                 typingLabel.setFont(new Font("Arial", Font.ITALIC, 14));
                 typingLabel.setForeground(Color.GRAY);

@@ -13,14 +13,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.text.DecimalFormat;
-import java.util.Locale;
-import net.miginfocom.swing.MigLayout;
-
 public final class Easy_Travel {
     private final JFrame frame;
     private final JPanel contentPanel;
@@ -32,8 +27,6 @@ public final class Easy_Travel {
     private JButton logoutButton;
     private User loggedInUser;
     private final List<BlogPost> blogPosts;
-    private PanelLoginAndRegister loginAndRegister;
-    private final DecimalFormat df = new DecimalFormat("##0.###", DecimalFormatSymbols.getInstance(Locale.US));
     private JButton adminDashboardButton;
     private JButton placeButton;
     public static void main(String[] args) {
@@ -325,7 +318,6 @@ public final class Easy_Travel {
     CardLayout cl = (CardLayout) (contentPanel.getLayout());
     cl.show(contentPanel, panelName);
     if ("showBlogPostDetails".equals(panelName)) {
-
         PlaceDetails placeDetails = (PlaceDetails) getPanel("showBlogPostDetails");
     }
 }
@@ -395,8 +387,6 @@ public final class Easy_Travel {
     }
 
     private void adjustMenuItems() {
-        int frameWidth = frame.getWidth();
-
         homeButton.setVisible(true);
         blogButton.setVisible(true);
         postButton.setVisible(false);
@@ -418,14 +408,6 @@ public final class Easy_Travel {
         }
     }
 
-    private JMenuItem createMenuItemFromButton(JButton button) {
-        JMenuItem menuItem = new JMenuItem(button.getText());
-        menuItem.setPreferredSize(new Dimension(menuItem.getPreferredSize().width, 50)); // Set custom height
-        for (java.awt.event.ActionListener al : button.getActionListeners()) {
-            menuItem.addActionListener(al);
-        }
-        return menuItem;
-    }
 
     public Font loadFont() {
         try (InputStream is = getClass().getResourceAsStream("/Lobster-Regular.ttf")) {
