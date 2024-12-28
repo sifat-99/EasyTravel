@@ -44,7 +44,15 @@ Easy Travel is a Java-based application designed to help users explore and book 
     ```
    ```css
     Use IntelliJ IDEA to open the project.
-   ```   
+   ```
+    ## Install Ollama 3.2 in your system
+    * Download Ollama 3.2 from the link below:
+   
+      [Download Ollama 3.2](https://ollama.com/download)
+   ## In your terminal run the following command to install Ollama 3.2:
+```c++
+        ollama run llama3.2:1b
+```
 
 2. **Configure the database**:
     - Create a MySQL database and import the provided SQL schema.
