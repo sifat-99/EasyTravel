@@ -120,21 +120,21 @@ public class HomePage extends JPanel {
     }
 
     // Initialize JavaFX video background
-    private void initFX(JFXPanel fxPanel) {
-        String videoPath = Objects.requireNonNull(getClass().getResource("/background.mp4")).toExternalForm();
-        Media media = new Media(videoPath);
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop the video
-
-        MediaView mediaView = new MediaView(mediaPlayer);
-        mediaView.setFitWidth(1400);
-        mediaView.setFitHeight(850);
-
-        Group root = new Group(mediaView);
-        Scene scene = new Scene(root, 1400, 850);
-        fxPanel.setScene(scene);
-        mediaPlayer.play();
-    }
+//    private void initFX(JFXPanel fxPanel) {
+//        String videoPath = Objects.requireNonNull(getClass().getResource("/background.mp4")).toExternalForm();
+//        Media media = new Media(videoPath);
+//        MediaPlayer mediaPlayer = new MediaPlayer(media);
+//        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop the video
+//
+//        MediaView mediaView = new MediaView(mediaPlayer);
+//        mediaView.setFitWidth(1400);
+//        mediaView.setFitHeight(850);
+//
+//        Group root = new Group(mediaView);
+//        Scene scene = new Scene(root, 1400, 850);
+//        fxPanel.setScene(scene);
+//        mediaPlayer.play();
+//    }
 
     // Chatbot logic
     private void showChatbot(Easy_Travel app) {
