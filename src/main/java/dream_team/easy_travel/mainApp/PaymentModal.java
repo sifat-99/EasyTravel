@@ -13,17 +13,17 @@ import java.util.UUID;
 
 public class PaymentModal extends JFrame {
     public int userId;
-    public PaymentModal(String restaurantName, String restaurantTable, String restaurantPrice, Easy_Travel app) {
+    public PaymentModal(String restaurantName, String restaurantTitle, String restaurantPrice, Easy_Travel app) {
         setSize(400, 400);
         setLocationRelativeTo(null);
         setLayout(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setTitle("Payment");
-        JLabel restaurantNameLabel = new JLabel("Restaurant: " + restaurantName);
+        JLabel restaurantNameLabel = new JLabel("Place: " + restaurantName);
         restaurantNameLabel.setBounds(10, 50, 350, 30);
         add(restaurantNameLabel);
-        JLabel tableLabel = new JLabel("Table: " + restaurantTable);
+        JLabel tableLabel = new JLabel("Name: " + restaurantTitle);
         tableLabel.setBounds(50, 100, 300, 30);
         add(tableLabel);
         JLabel amountLabel = new JLabel("Amount: ");
@@ -81,7 +81,7 @@ public class PaymentModal extends JFrame {
                 try {
                     PreparedStatement stmt = conn.prepareStatement(query);
                     stmt.setInt(1, userId);
-                    stmt.setString(2, restaurantName);
+                    stmt.setString(2, restaurantTitle);
                     stmt.setString(3, restaurantPrice);
                     stmt.setString(4, transactionId);
                     stmt.setString(5, "Pending");
