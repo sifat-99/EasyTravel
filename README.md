@@ -5,7 +5,7 @@ Easy Travel is a Java-based application designed to help users explore and book 
 ## Project Overview (Screenshots)
 
 ### Login Page
-![CleanShot 2024-11-27 at 02 44 37@2x](https://github.com/user-attachments/assets/0de34191-2edc-47c7-a8d3-5edd047a4e6b)
+![CleanShot 2024-12-29 at 15 57 41@2x](https://github.com/user-attachments/assets/4184998f-42ae-4b8f-8b7d-4f403cfe0c96)
 
 ### Home Page
 ![HomePage](https://github.com/user-attachments/assets/509b49a3-04fa-4c83-931a-b859158bfb49)
