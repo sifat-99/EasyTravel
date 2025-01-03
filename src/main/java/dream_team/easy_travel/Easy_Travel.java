@@ -115,7 +115,7 @@ public final class Easy_Travel {
             ex.printStackTrace();
         }
         finally {
-            System.out.println("Blog Posts loaded successfully");
+//            System.out.println("Blog Posts loaded successfully");
         }
     }
 
