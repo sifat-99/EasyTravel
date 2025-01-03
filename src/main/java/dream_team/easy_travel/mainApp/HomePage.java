@@ -294,7 +294,7 @@ public class HomePage extends JPanel {
                         Thread.sleep(500); // Optional: Simulate typing delay
 
                         String model = "llama3.2:1b"; // Ensure this model is available on the server
-                        String response = generateCompletion(model, message + " in less than 15 words", null, null, null, null, null, null, false, false, null, null);
+                        String response = generateCompletion(model, message + " in less than 15 words in my Easy travel ap. dont show references", null, null, null, null, null, null, false, false, null, null);
 
                         ObjectMapper objectMapper = new ObjectMapper();
                         ChatbotResponse chatbotResponse = objectMapper.readValue(response, ChatbotResponse.class);
