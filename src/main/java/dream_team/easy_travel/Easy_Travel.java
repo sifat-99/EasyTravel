@@ -99,6 +99,8 @@ public final class Easy_Travel {
 
 
 
+
+
     private void loadInitialBlogPosts() {
         String query = "SELECT * FROM blog_posts";
         try (Connection conn = ConnectDB.getConnection();
